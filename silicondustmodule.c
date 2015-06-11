@@ -278,17 +278,21 @@ static PyMethodDef silicondust_methods[] =
 PyMODINIT_FUNC initsilicondust(void) {
     PyObject *m;
 
-    if (PyType_Ready(&silicondust_hdhr_type) < 0)
+    m = Py_InitModule3("silicondust", silicondust_methods, silicondust_module_doc);
+    if(!m)
         return;
 
-    m = Py_InitModule3("silicondust", silicondust_methods, silicondust_module_doc);
-
+    /* Finalize the HDHR type object */
+    if (PyType_Ready(&silicondust_hdhr_type) < 0)
+        return;
     Py_INCREF(&silicondust_hdhr_type);
-    PyModule_AddObject(m, "HDHR", (PyObject *)&silicondust_hdhr_type);
+    if(PyModule_AddObject(m, "HDHR", (PyObject *)&silicondust_hdhr_type) < 0)
+        return;
 
     /* Initialize the HDHRError exception class */
     silicondust_hdhr_error = PyErr_NewException("silicondust.HDHRError", PyExc_Exception, NULL);
     Py_INCREF(silicondust_hdhr_error);
-    PyModule_AddObject(m, "HDHRError", silicondust_hdhr_error);
+    if(PyModule_AddObject(m, "HDHRError", silicondust_hdhr_error) < 0)
+        return;
 }
 
