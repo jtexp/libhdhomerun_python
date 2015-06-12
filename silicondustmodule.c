@@ -35,6 +35,7 @@ typedef struct
     PyObject_HEAD
     struct hdhomerun_device_t *hd;
     unsigned int tuner_count;
+    unsigned int locked;
 } py_hdhr_object;
 
 static int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds)
@@ -52,11 +53,17 @@ static int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds)
         return -1;
     }
     self->tuner_count = tuner_count;
+    self->locked = 0;
     return 0;
 }
 
 static void py_hdhr_dealloc(py_hdhr_object *self)
 {
+    if(self->locked != 0) {
+        /* Try to unlock the tuner, ignore errors */
+        hdhomerun_device_tuner_lockkey_release(self->hd);
+        self->locked = 0;
+    }
     hdhomerun_device_destroy(self->hd);
     self->hd = NULL;
     self->tuner_count = 0;
@@ -224,12 +231,77 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args)
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(HDHR_lock_doc,
+    "Locks a tuner.");
+
+static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args)
+{
+    char *ret_error = "";
+    int success;
+    int force_success;
+    int force = 0;
+    PyObject *force_obj = NULL;
+
+    if(!PyArg_ParseTuple(args, "|O!", &PyBool_Type, &force_obj))
+        return NULL;
+    if(force_obj != NULL) {
+        force = PyObject_IsTrue(force_obj);
+        if(force < 0)
+            return NULL;
+    }
+    if(self->locked == 0) {
+        success = hdhomerun_device_tuner_lockkey_request(self->hd, &ret_error);
+        if(success == -1) {
+            PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+            return NULL;
+        } else if(success == 0) {
+            /* the lock request was rejected by the device */
+            PyErr_SetString(silicondust_hdhr_error, ret_error);
+            return NULL;
+        } else if(success == 1) {
+            self->locked = 1;
+        } else {
+            PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+            return NULL;
+        }
+    }
+    Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(HDHR_unlock_doc,
+    "Unlocks a tuner.");
+
+static PyObject *py_hdhr_unlock(py_hdhr_object *self)
+{
+    int success;
+
+    if(self->locked != 0) {
+        success = hdhomerun_device_tuner_lockkey_release(self->hd);
+        if(success == -1) {
+            PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+            return NULL;
+        } else if(success == 0) {
+            /* the unlock request was rejected by the device */
+            PyErr_SetString(silicondust_hdhr_error, "the device rejected the unlock request");
+            return NULL;
+        } else if(success == 1) {
+            self->locked = 0;
+        } else {
+            PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+            return NULL;
+        }
+    }
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
     {"discover", (PyCFunction)py_hdhr_discover, METH_VARARGS | METH_CLASS, HDHR_discover_doc},
     {"get",      (PyCFunction)py_hdhr_get,      METH_VARARGS,              HDHR_get_doc},
     {"set",      (PyCFunction)py_hdhr_set,      METH_VARARGS,              HDHR_set_doc},
     {"upgrade",  (PyCFunction)py_hdhr_upgrade,  METH_VARARGS,              HDHR_upgrade_doc},
+    {"lock",     (PyCFunction)py_hdhr_lock,     METH_VARARGS,              HDHR_lock_doc},
+    {"unlock",   (PyCFunction)py_hdhr_unlock,   METH_NOARGS,               HDHR_unlock_doc},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
