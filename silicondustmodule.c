@@ -55,6 +55,14 @@ static int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds)
     return 0;
 }
 
+static void py_hdhr_dealloc(py_hdhr_object *self)
+{
+    hdhomerun_device_destroy(self->hd);
+    self->hd = NULL;
+    self->tuner_count = 0;
+    self->ob_type->tp_free((PyObject*)self);
+}
+
 static uint32_t parse_ip_addr(const char *str)
 {
     unsigned int a[4];
@@ -232,7 +240,7 @@ static PyTypeObject silicondust_hdhr_type =
     "silicondust.HDHR",             /* tp_name */
     sizeof(py_hdhr_object),         /* tp_basicsize */
     0,                              /* tp_itemsize */
-    0,                              /* tp_dealloc */
+    (destructor)py_hdhr_dealloc,    /* tp_dealloc */
     0,                              /* tp_print */
     0,                              /* tp_getattr */
     0,                              /* tp_setattr */
@@ -247,7 +255,7 @@ static PyTypeObject silicondust_hdhr_type =
     0,                              /* tp_getattro */
     0,                              /* tp_setattro */
     0,                              /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT,             /* tp_flags */
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
     silicondust_HDHR_type_doc,      /* tp_doc */
     0,                              /* tp_traverse */
     0,                              /* tp_clear */
