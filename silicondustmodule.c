@@ -120,7 +120,7 @@ static PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds)
 }
 
 PyDoc_STRVAR(HDHR_get_doc,
-    "Obtains the current value for the given configuration item.");
+    "Get a named control variable on the device.");
 
 static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args)
 {
@@ -145,7 +145,7 @@ static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args)
 }
 
 PyDoc_STRVAR(HDHR_set_doc,
-    "Sets a new value for the given configuration item.");
+    "Set a named control variable on the device.");
 
 static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args)
 {
