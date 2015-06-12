@@ -258,13 +258,13 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args)
             /* the lock request was rejected by the device */
             if(force > 0) {
                 force_success = hdhomerun_device_tuner_lockkey_force(self->hd);
-                if(success == -1) {
+                if(force_success == -1) {
                     PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
                     return NULL;
-                } else if(success == 0) {
+                } else if(force_success == 0) {
                     PyErr_SetString(silicondust_hdhr_error, "could not forcibly take device lock");
                     return NULL;
-                } else if(success == 1) {
+                } else if(force_success == 1) {
                     self->locked = 1;
                 } else {
                     PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
