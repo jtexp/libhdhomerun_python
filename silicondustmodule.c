@@ -125,23 +125,27 @@ PyDoc_STRVAR(HDHR_get_doc,
 static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args)
 {
     char *ret_value = NULL;
-    char *ret_error = NULL;
+    char *ret_error = "";
     char *item = NULL;
+    int success;
 
     if(!PyArg_ParseTuple(args, "s", &item))
         return NULL;
 
-    if(hdhomerun_device_get_var(self->hd, item, &ret_value, &ret_error) < 0) {
+    success = hdhomerun_device_get_var(self->hd, item, &ret_value, &ret_error);
+    if(success == -1) {
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
         return NULL;
-    }
-
-    if(ret_error) {
+    } else if(success == 0) {
+        /* the operation was rejected by the device */
         PyErr_SetString(silicondust_hdhr_error, ret_error);
         return NULL;
+    } else if(success == 1) {
+        return PyString_FromString(ret_value);
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
     }
-
-    return PyString_FromString(ret_value);
 }
 
 PyDoc_STRVAR(HDHR_set_doc,
@@ -149,24 +153,28 @@ PyDoc_STRVAR(HDHR_set_doc,
 
 static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args)
 {
-    char *ret_error = NULL;
+    char *ret_error = "";
     char *item = NULL;
     char *value = NULL;
+    int success;
 
     if(!PyArg_ParseTuple(args, "ss", &item, &value))
         return NULL;
 
-    if(hdhomerun_device_set_var(self->hd, item, value, NULL, &ret_error) < 0) {
+    success = hdhomerun_device_set_var(self->hd, item, value, NULL, &ret_error);
+    if(success == -1) {
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
         return NULL;
-    }
-
-    if(ret_error) {
+    } else if(success == 0) {
+        /* the operation was rejected by the device */
         PyErr_SetString(silicondust_hdhr_error, ret_error);
         return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
     }
-
-    Py_RETURN_NONE;
 }
 
 PyDoc_STRVAR(HDHR_upgrade_doc,
