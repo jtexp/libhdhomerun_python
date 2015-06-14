@@ -281,7 +281,7 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kw
 PyDoc_STRVAR(HDHR_unlock_doc,
     "Unlocks a tuner.");
 
-static PyObject *py_hdhr_unlock(py_hdhr_object *self, PyObject *args)
+static PyObject *py_hdhr_unlock(py_hdhr_object *self)
 {
     int success;
 
