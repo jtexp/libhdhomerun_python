@@ -198,6 +198,7 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject 
     char *version_str;
     PyObject *wait_obj = NULL;
     char *kwlist[] = {"filename", "wait", NULL};
+    int success;
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "sO!", kwlist, &filename, &PyBool_Type, &wait_obj))
         return NULL;
@@ -207,12 +208,16 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject 
         PyErr_SetString(PyExc_IOError, "unable to open firmware file");
         return NULL;
     }
-    if (hdhomerun_device_upgrade(self->hd, fp) <= 0) {
+    success = hdhomerun_device_upgrade(self->hd, fp);
+    fclose(fp);
+    fp = NULL;
+    if(success == -1) {
         PyErr_SetString(silicondust_hdhr_error, "error sending upgrade file to hdhomerun device");
-        fclose(fp);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "the hdhomerun device rejected the firmware upgrade");
         return NULL;
     }
-    fclose(fp);
 
     wait = PyObject_IsTrue(wait_obj);
     if(wait < 0)
