@@ -299,13 +299,13 @@ static PyObject *py_hdhr_unlock(py_hdhr_object *self, PyObject *args)
 
 static PyMethodDef py_hdhr_methods[] =
 {
-    {"discover", (PyCFunctionWithKeywords)py_hdhr_discover, METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
-    {"get",      (PyCFunctionWithKeywords)py_hdhr_get,      METH_KEYWORDS,              HDHR_get_doc},
-    {"set",      (PyCFunctionWithKeywords)py_hdhr_set,      METH_KEYWORDS,              HDHR_set_doc},
-    {"upgrade",  (PyCFunctionWithKeywords)py_hdhr_upgrade,  METH_KEYWORDS,              HDHR_upgrade_doc},
-    {"lock",     (PyCFunctionWithKeywords)py_hdhr_lock,     METH_KEYWORDS,              HDHR_lock_doc},
-    {"unlock",   (PyCFunction)py_hdhr_unlock,               METH_NOARGS,                HDHR_unlock_doc},
-    {NULL,       NULL,                                      0,                          NULL}  /* Sentinel */
+    {"discover", (PyCFunction)py_hdhr_discover, METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
+    {"get",      (PyCFunction)py_hdhr_get,      METH_KEYWORDS,              HDHR_get_doc},
+    {"set",      (PyCFunction)py_hdhr_set,      METH_KEYWORDS,              HDHR_set_doc},
+    {"upgrade",  (PyCFunction)py_hdhr_upgrade,  METH_KEYWORDS,              HDHR_upgrade_doc},
+    {"lock",     (PyCFunction)py_hdhr_lock,     METH_KEYWORDS,              HDHR_lock_doc},
+    {"unlock",   (PyCFunction)py_hdhr_unlock,   METH_NOARGS,                HDHR_unlock_doc},
+    {NULL,       NULL,                          0,                          NULL}  /* Sentinel */
 };
 
 static PyMemberDef py_hdhr_members[] =
