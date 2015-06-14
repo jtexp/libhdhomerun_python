@@ -238,7 +238,6 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args)
 {
     char *ret_error = "";
     int success;
-    int force_success;
     int force = 0;
     PyObject *force_obj = NULL;
 
@@ -249,37 +248,24 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args)
         if(force < 0)
             return NULL;
     }
-    if(self->locked == 0) {
+    if(force == 0) {
         success = hdhomerun_device_tuner_lockkey_request(self->hd, &ret_error);
-        if(success == -1) {
-            PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
-            return NULL;
-        } else if(success == 0) {
-            /* the lock request was rejected by the device */
-            if(force > 0) {
-                force_success = hdhomerun_device_tuner_lockkey_force(self->hd);
-                if(force_success == -1) {
-                    PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
-                    return NULL;
-                } else if(force_success == 0) {
-                    PyErr_SetString(silicondust_hdhr_error, "could not forcibly take device lock");
-                    return NULL;
-                } else if(force_success == 1) {
-                    self->locked = 1;
-                } else {
-                    PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
-                    return NULL;
-                }
-            } else {
-                PyErr_SetString(silicondust_hdhr_error, ret_error);
-                return NULL;
-            }
-        } else if(success == 1) {
-            self->locked = 1;
-        } else {
-            PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
-            return NULL;
-        }
+    } else {
+        success = hdhomerun_device_tuner_lockkey_force(self->hd);
+    }
+
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        /* the lock request was rejected by the device */
+        PyErr_SetString(silicondust_hdhr_error, ret_error);
+        return NULL;
+    } else if(success == 1) {
+        self->locked = 1;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
     }
     Py_RETURN_NONE;
 }
