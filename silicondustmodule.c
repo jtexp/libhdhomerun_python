@@ -129,14 +129,15 @@ static PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds)
 PyDoc_STRVAR(HDHR_get_doc,
     "Get a named control variable on the device.");
 
-static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args)
+static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
     char *ret_value = NULL;
     char *ret_error = "";
     char *item = NULL;
     int success;
+    char *kwlist[] = {"item", NULL};
 
-    if(!PyArg_ParseTuple(args, "s", &item))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &item))
         return NULL;
 
     success = hdhomerun_device_get_var(self->hd, item, &ret_value, &ret_error);
@@ -158,14 +159,15 @@ static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args)
 PyDoc_STRVAR(HDHR_set_doc,
     "Set a named control variable on the device.");
 
-static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args)
+static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
     char *ret_error = "";
     char *item = NULL;
     char *value = NULL;
     int success;
+    char *kwlist[] = {"item", "value", NULL};
 
-    if(!PyArg_ParseTuple(args, "ss", &item, &value))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ss", kwlist, &item, &value))
         return NULL;
 
     success = hdhomerun_device_set_var(self->hd, item, value, NULL, &ret_error);
@@ -187,7 +189,7 @@ static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args)
 PyDoc_STRVAR(HDHR_upgrade_doc,
     "Uploads and installs a firmware image on a HDHomeRun device.");
 
-static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args)
+static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
     FILE *fp = NULL;
     char *filename = NULL;
@@ -195,8 +197,9 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args)
     int wait = -1;
     char *version_str;
     PyObject *wait_obj = NULL;
+    char *kwlist[] = {"filename", "wait", NULL};
 
-    if(!PyArg_ParseTuple(args, "sO!", &filename, &PyBool_Type, &wait_obj))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "sO!", kwlist, &filename, &PyBool_Type, &wait_obj))
         return NULL;
 
     fp = fopen(filename, "rb");
@@ -234,7 +237,7 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args)
 PyDoc_STRVAR(HDHR_lock_doc,
     "Locks a tuner.");
 
-static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args)
+static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
     char *ret_error = "";
     int success;
@@ -273,38 +276,36 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args)
 PyDoc_STRVAR(HDHR_unlock_doc,
     "Unlocks a tuner.");
 
-static PyObject *py_hdhr_unlock(py_hdhr_object *self)
+static PyObject *py_hdhr_unlock(py_hdhr_object *self, PyObject *args)
 {
     int success;
 
-    if(self->locked != 0) {
-        success = hdhomerun_device_tuner_lockkey_release(self->hd);
-        if(success == -1) {
-            PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
-            return NULL;
-        } else if(success == 0) {
-            /* the unlock request was rejected by the device */
-            PyErr_SetString(silicondust_hdhr_error, "the device rejected the unlock request");
-            return NULL;
-        } else if(success == 1) {
-            self->locked = 0;
-        } else {
-            PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
-            return NULL;
-        }
+    success = hdhomerun_device_tuner_lockkey_release(self->hd);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        /* the unlock request was rejected by the device */
+        PyErr_SetString(silicondust_hdhr_error, "the device rejected the unlock request");
+        return NULL;
+    } else if(success == 1) {
+        self->locked = 0;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
     }
     Py_RETURN_NONE;
 }
 
 static PyMethodDef py_hdhr_methods[] =
 {
-    {"discover", (PyCFunction)py_hdhr_discover, METH_VARARGS | METH_CLASS, HDHR_discover_doc},
-    {"get",      (PyCFunction)py_hdhr_get,      METH_VARARGS,              HDHR_get_doc},
-    {"set",      (PyCFunction)py_hdhr_set,      METH_VARARGS,              HDHR_set_doc},
-    {"upgrade",  (PyCFunction)py_hdhr_upgrade,  METH_VARARGS,              HDHR_upgrade_doc},
-    {"lock",     (PyCFunction)py_hdhr_lock,     METH_VARARGS,              HDHR_lock_doc},
-    {"unlock",   (PyCFunction)py_hdhr_unlock,   METH_NOARGS,               HDHR_unlock_doc},
-    {NULL,       NULL,                          0,                         NULL}  /* Sentinel */
+    {"discover", (PyCFunctionWithKeywords)py_hdhr_discover, METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
+    {"get",      (PyCFunctionWithKeywords)py_hdhr_get,      METH_KEYWORDS,              HDHR_get_doc},
+    {"set",      (PyCFunctionWithKeywords)py_hdhr_set,      METH_KEYWORDS,              HDHR_set_doc},
+    {"upgrade",  (PyCFunctionWithKeywords)py_hdhr_upgrade,  METH_KEYWORDS,              HDHR_upgrade_doc},
+    {"lock",     (PyCFunctionWithKeywords)py_hdhr_lock,     METH_KEYWORDS,              HDHR_lock_doc},
+    {"unlock",   (PyCFunction)py_hdhr_unlock,               METH_NOARGS,                HDHR_unlock_doc},
+    {NULL,       NULL,                                      0,                          NULL}  /* Sentinel */
 };
 
 static PyMemberDef py_hdhr_members[] =
