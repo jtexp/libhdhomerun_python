@@ -304,7 +304,7 @@ static PyMethodDef py_hdhr_methods[] =
     {"upgrade",  (PyCFunction)py_hdhr_upgrade,  METH_VARARGS,              HDHR_upgrade_doc},
     {"lock",     (PyCFunction)py_hdhr_lock,     METH_VARARGS,              HDHR_lock_doc},
     {"unlock",   (PyCFunction)py_hdhr_unlock,   METH_NOARGS,               HDHR_unlock_doc},
-    {NULL, NULL, 0, NULL}  /* Sentinel */
+    {NULL,       NULL,                          0,                         NULL}  /* Sentinel */
 };
 
 static PyMemberDef py_hdhr_members[] =
