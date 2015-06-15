@@ -132,7 +132,7 @@ PyDoc_STRVAR(HDHR_get_doc,
 static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
     char *ret_value = NULL;
-    char *ret_error = "";
+    char *ret_error = "the get operation was rejected by the device";
     char *item = NULL;
     int success;
     char *kwlist[] = {"item", NULL};
@@ -145,7 +145,6 @@ static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwd
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
         return NULL;
     } else if(success == 0) {
-        /* the operation was rejected by the device */
         PyErr_SetString(silicondust_hdhr_error, ret_error);
         return NULL;
     } else if(success == 1) {
@@ -161,7 +160,7 @@ PyDoc_STRVAR(HDHR_set_doc,
 
 static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
-    char *ret_error = "";
+    char *ret_error = "the set operation was rejected by the device";
     char *item = NULL;
     char *value = NULL;
     int success;
@@ -175,7 +174,6 @@ static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args, PyObject *kwd
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
         return NULL;
     } else if(success == 0) {
-        /* the operation was rejected by the device */
         PyErr_SetString(silicondust_hdhr_error, ret_error);
         return NULL;
     } else if(success == 1) {
@@ -244,7 +242,7 @@ PyDoc_STRVAR(HDHR_lock_doc,
 
 static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
-    char *ret_error = "";
+    char *ret_error = "the device rejected the lock request";
     int success;
     int force = 0;
     PyObject *force_obj = NULL;
@@ -266,7 +264,6 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kw
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
         return NULL;
     } else if(success == 0) {
-        /* the lock request was rejected by the device */
         PyErr_SetString(silicondust_hdhr_error, ret_error);
         return NULL;
     } else if(success == 1) {
@@ -290,7 +287,6 @@ static PyObject *py_hdhr_unlock(py_hdhr_object *self)
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
         return NULL;
     } else if(success == 0) {
-        /* the unlock request was rejected by the device */
         PyErr_SetString(silicondust_hdhr_error, "the device rejected the unlock request");
         return NULL;
     } else if(success == 1) {
