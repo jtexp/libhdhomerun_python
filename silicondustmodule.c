@@ -298,15 +298,79 @@ static PyObject *py_hdhr_unlock(py_hdhr_object *self)
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(HDHR_stream_start_doc,
+    "Tell the device to start streaming data.");
+
+static PyObject *py_hdhr_stream_start(py_hdhr_object *self)
+{
+    int success;
+
+    success = hdhomerun_device_stream_start(self->hd);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "the device refused to start streaming");
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(HDHR_stream_recv_doc,
+    "Receive stream data.");
+
+static PyObject *py_hdhr_stream_recv(py_hdhr_object *self, PyObject *args, PyObject *kwds)
+{
+    uint8_t *ptr;
+    size_t actual_size;
+    unsigned int max_size = VIDEO_DATA_BUFFER_SIZE_1S;
+    char *kwlist[] = {"max_size", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|I", kwlist, &max_size))
+        return NULL;
+
+    ptr = hdhomerun_device_stream_recv(self->hd, (size_t)max_size, &actual_size);
+    if(!ptr) {
+        Py_RETURN_NONE;
+    }
+
+    return PyByteArray_FromStringAndSize((const char *)ptr, (Py_ssize_t)actual_size);
+}
+
+PyDoc_STRVAR(HDHR_stream_flush_doc,
+    "Undocumented.");
+
+static PyObject *py_hdhr_stream_flush(py_hdhr_object *self)
+{
+    hdhomerun_device_stream_flush(self->hd);
+    Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(HDHR_stream_stop_doc,
+    "Tell the device to stop streaming data.");
+
+static PyObject *py_hdhr_stream_stop(py_hdhr_object *self)
+{
+    hdhomerun_device_stream_stop(self->hd);
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
-    {"discover", (PyCFunction)py_hdhr_discover, METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
-    {"get",      (PyCFunction)py_hdhr_get,      METH_KEYWORDS,              HDHR_get_doc},
-    {"set",      (PyCFunction)py_hdhr_set,      METH_KEYWORDS,              HDHR_set_doc},
-    {"upgrade",  (PyCFunction)py_hdhr_upgrade,  METH_KEYWORDS,              HDHR_upgrade_doc},
-    {"lock",     (PyCFunction)py_hdhr_lock,     METH_KEYWORDS,              HDHR_lock_doc},
-    {"unlock",   (PyCFunction)py_hdhr_unlock,   METH_NOARGS,                HDHR_unlock_doc},
-    {NULL,       NULL,                          0,                          NULL}  /* Sentinel */
+    {"discover",     (PyCFunction)py_hdhr_discover,     METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
+    {"get",          (PyCFunction)py_hdhr_get,          METH_KEYWORDS,              HDHR_get_doc},
+    {"set",          (PyCFunction)py_hdhr_set,          METH_KEYWORDS,              HDHR_set_doc},
+    {"upgrade",      (PyCFunction)py_hdhr_upgrade,      METH_KEYWORDS,              HDHR_upgrade_doc},
+    {"lock",         (PyCFunction)py_hdhr_lock,         METH_KEYWORDS,              HDHR_lock_doc},
+    {"unlock",       (PyCFunction)py_hdhr_unlock,       METH_NOARGS,                HDHR_unlock_doc},
+    {"stream_start", (PyCFunction)py_hdhr_stream_start, METH_NOARGS,                HDHR_stream_start_doc},
+    {"stream_recv",  (PyCFunction)py_hdhr_stream_recv,  METH_KEYWORDS,              HDHR_stream_recv_doc},
+    {"stream_flush", (PyCFunction)py_hdhr_stream_flush, METH_NOARGS,                HDHR_stream_flush_doc},
+    {"stream_stop",  (PyCFunction)py_hdhr_stream_stop,  METH_NOARGS,                HDHR_stream_stop_doc},
+    {NULL,           NULL,                              0,                          NULL}  /* Sentinel */
 };
 
 static PyMemberDef py_hdhr_members[] =
