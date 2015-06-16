@@ -118,8 +118,8 @@ static PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds)
     if(count > 0) {
         for(i=0; i<count; i++) {
             tuner = PyObject_CallFunction(cls, "III", result_list[i].device_id, result_list[i].ip_addr, result_list[i].tuner_count);
-            if(tuner == NULL) return NULL;
-            if(PyList_SetItem(result, i, tuner) != 0) return NULL;
+            if(tuner == NULL) { Py_DECREF(result); return NULL; }
+            if(PyList_SetItem(result, i, tuner) != 0) { Py_DECREF(result); return NULL; }
         }
     }
 
