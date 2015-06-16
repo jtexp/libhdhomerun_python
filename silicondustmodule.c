@@ -358,19 +358,43 @@ static PyObject *py_hdhr_stream_stop(py_hdhr_object *self)
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(HDHR_wait_for_lock_doc,
+    "Wait for tuner lock after channel change.");
+
+static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self)
+{
+    int success;
+    struct hdhomerun_tuner_status_t status;
+
+    success = hdhomerun_device_wait_for_lock(self->hd, &status);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "the device did not report lock status");
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+    /* FIXME: build and return a dict from status... */
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
-    {"discover",     (PyCFunction)py_hdhr_discover,     METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
-    {"get",          (PyCFunction)py_hdhr_get,          METH_KEYWORDS,              HDHR_get_doc},
-    {"set",          (PyCFunction)py_hdhr_set,          METH_KEYWORDS,              HDHR_set_doc},
-    {"upgrade",      (PyCFunction)py_hdhr_upgrade,      METH_KEYWORDS,              HDHR_upgrade_doc},
-    {"lock",         (PyCFunction)py_hdhr_lock,         METH_KEYWORDS,              HDHR_lock_doc},
-    {"unlock",       (PyCFunction)py_hdhr_unlock,       METH_NOARGS,                HDHR_unlock_doc},
-    {"stream_start", (PyCFunction)py_hdhr_stream_start, METH_NOARGS,                HDHR_stream_start_doc},
-    {"stream_recv",  (PyCFunction)py_hdhr_stream_recv,  METH_KEYWORDS,              HDHR_stream_recv_doc},
-    {"stream_flush", (PyCFunction)py_hdhr_stream_flush, METH_NOARGS,                HDHR_stream_flush_doc},
-    {"stream_stop",  (PyCFunction)py_hdhr_stream_stop,  METH_NOARGS,                HDHR_stream_stop_doc},
-    {NULL,           NULL,                              0,                          NULL}  /* Sentinel */
+    {"discover",      (PyCFunction)py_hdhr_discover,      METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
+    {"get",           (PyCFunction)py_hdhr_get,           METH_KEYWORDS,              HDHR_get_doc},
+    {"set",           (PyCFunction)py_hdhr_set,           METH_KEYWORDS,              HDHR_set_doc},
+    {"upgrade",       (PyCFunction)py_hdhr_upgrade,       METH_KEYWORDS,              HDHR_upgrade_doc},
+    {"lock",          (PyCFunction)py_hdhr_lock,          METH_KEYWORDS,              HDHR_lock_doc},
+    {"unlock",        (PyCFunction)py_hdhr_unlock,        METH_NOARGS,                HDHR_unlock_doc},
+    {"stream_start",  (PyCFunction)py_hdhr_stream_start,  METH_NOARGS,                HDHR_stream_start_doc},
+    {"stream_recv",   (PyCFunction)py_hdhr_stream_recv,   METH_KEYWORDS,              HDHR_stream_recv_doc},
+    {"stream_flush",  (PyCFunction)py_hdhr_stream_flush,  METH_NOARGS,                HDHR_stream_flush_doc},
+    {"stream_stop",   (PyCFunction)py_hdhr_stream_stop,   METH_NOARGS,                HDHR_stream_stop_doc},
+    {"wait_for_lock", (PyCFunction)py_hdhr_wait_for_lock, METH_NOARGS,                HDHR_wait_for_lock_doc},
+    {NULL,            NULL,                               0,                          NULL}  /* Sentinel */
 };
 
 static PyMemberDef py_hdhr_members[] =
