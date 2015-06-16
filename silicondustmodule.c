@@ -363,6 +363,7 @@ PyDoc_STRVAR(HDHR_wait_for_lock_doc,
 
 static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self)
 {
+    PyObject *rv, *dv;
     int success;
     struct hdhomerun_tuner_status_t status;
 
@@ -377,8 +378,51 @@ static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self)
         PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
         return NULL;
     }
-    /* FIXME: build and return a dict from status... */
-    Py_RETURN_NONE;
+
+    rv = PyDict_New();
+    if(!rv) return NULL;
+
+    dv = PyString_FromString(status.channel);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "channel", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyString_FromString(status.lock_str);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "lock_str", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyBool_FromLong((long)status.signal_present);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "signal_present", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyBool_FromLong((long)status.lock_supported);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "lock_supported", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyBool_FromLong((long)status.lock_unsupported);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "lock_unsupported", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status.signal_strength);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "signal_strength", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status.signal_to_noise_quality);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "signal_to_noise_quality", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status.symbol_error_quality);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "symbol_error_quality", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status.raw_bits_per_second);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "raw_bits_per_second", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status.packets_per_second);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "packets_per_second", dv) != 0) { Py_DECREF(rv); return NULL; }
+
+    return rv;
 }
 
 PyDoc_STRVAR(HDHR_get_name_doc,
