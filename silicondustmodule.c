@@ -381,6 +381,39 @@ static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self)
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(HDHR_get_name_doc,
+    "Get the device name.");
+
+static PyObject *py_hdhr_get_name(py_hdhr_object *self)
+{
+    const char *name;
+
+    name = hdhomerun_device_get_name(self->hd);
+    return PyString_FromString(name);
+}
+
+PyDoc_STRVAR(HDHR_get_device_id_doc,
+    "Get the device ID.");
+
+static PyObject *py_hdhr_get_device_id(py_hdhr_object *self)
+{
+    uint32_t device_id;
+
+    device_id = hdhomerun_device_get_device_id(self->hd);
+    return PyLong_FromUnsignedLong((unsigned long)device_id);
+}
+
+PyDoc_STRVAR(HDHR_get_device_ip_doc,
+    "Get the device IP.");
+
+static PyObject *py_hdhr_get_device_ip(py_hdhr_object *self)
+{
+    uint32_t device_ip;
+
+    device_ip = hdhomerun_device_get_device_ip(self->hd);
+    return PyLong_FromUnsignedLong((unsigned long)device_ip);
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
     {"discover",      (PyCFunction)py_hdhr_discover,      METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
@@ -394,6 +427,9 @@ static PyMethodDef py_hdhr_methods[] =
     {"stream_flush",  (PyCFunction)py_hdhr_stream_flush,  METH_NOARGS,                HDHR_stream_flush_doc},
     {"stream_stop",   (PyCFunction)py_hdhr_stream_stop,   METH_NOARGS,                HDHR_stream_stop_doc},
     {"wait_for_lock", (PyCFunction)py_hdhr_wait_for_lock, METH_NOARGS,                HDHR_wait_for_lock_doc},
+    {"get_name",      (PyCFunction)py_hdhr_get_name,      METH_NOARGS,                HDHR_get_name_doc},
+    {"get_device_id", (PyCFunction)py_hdhr_get_device_id, METH_NOARGS,                HDHR_get_device_id_doc},
+    {"get_device_ip", (PyCFunction)py_hdhr_get_device_ip, METH_NOARGS,                HDHR_get_device_ip_doc},
     {NULL,            NULL,                               0,                          NULL}  /* Sentinel */
 };
 
