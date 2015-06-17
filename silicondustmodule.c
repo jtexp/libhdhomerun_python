@@ -382,6 +382,7 @@ static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self)
     rv = PyDict_New();
     if(!rv) return NULL;
 
+    /* https://mail.python.org/pipermail/capi-sig/2010-July/000414.html */
     dv = PyString_FromString(status.channel);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "channel", dv) != 0) { Py_DECREF(rv); return NULL; }
@@ -468,6 +469,28 @@ static PyObject *py_hdhr_get_device_ip(py_hdhr_object *self)
     return PyLong_FromUnsignedLong((unsigned long)device_ip);
 }
 
+PyDoc_STRVAR(HDHR_get_device_id_requested_doc,
+    "Get the requested device ID.");
+
+static PyObject *py_hdhr_get_device_id_requested(py_hdhr_object *self)
+{
+    uint32_t device_id;
+
+    device_id = hdhomerun_device_get_device_id_requested(self->hd);
+    return PyLong_FromUnsignedLong((unsigned long)device_id);
+}
+
+PyDoc_STRVAR(HDHR_get_device_ip_requested_doc,
+    "Get the requested device IP.");
+
+static PyObject *py_hdhr_get_device_ip_requested(py_hdhr_object *self)
+{
+    uint32_t device_ip;
+
+    device_ip = hdhomerun_device_get_device_ip_requested(self->hd);
+    return PyLong_FromUnsignedLong((unsigned long)device_ip);
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
     {"discover",      (PyCFunction)py_hdhr_discover,      METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
@@ -484,6 +507,8 @@ static PyMethodDef py_hdhr_methods[] =
     {"get_name",      (PyCFunction)py_hdhr_get_name,      METH_NOARGS,                HDHR_get_name_doc},
     {"get_device_id", (PyCFunction)py_hdhr_get_device_id, METH_NOARGS,                HDHR_get_device_id_doc},
     {"get_device_ip", (PyCFunction)py_hdhr_get_device_ip, METH_NOARGS,                HDHR_get_device_ip_doc},
+    {"get_device_id_requested", (PyCFunction)py_hdhr_get_device_id_requested, METH_NOARGS,                HDHR_get_device_id_requested_doc},
+    {"get_device_ip_requested", (PyCFunction)py_hdhr_get_device_ip_requested, METH_NOARGS,                HDHR_get_device_ip_requested_doc},
     {NULL,            NULL,                               0,                          NULL}  /* Sentinel */
 };
 
