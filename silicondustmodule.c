@@ -530,6 +530,33 @@ static PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObje
     }
 }
 
+PyDoc_STRVAR(HDHR_set_tuner_doc,
+    "Set the tuner which this object references.");
+
+static PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObject *kwds)
+{
+    unsigned int tuner = 0;
+    char *kwlist[] = {"tuner", NULL};
+    int success;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &tuner))
+        return NULL;
+
+    success = hdhomerun_device_set_tuner(self->hd, tuner);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "failed to set tuner number");
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
@@ -541,6 +568,7 @@ static PyMethodDef py_hdhr_methods[] =
     {"get_device_ip_requested", (PyCFunction)py_hdhr_get_device_ip_requested, METH_NOARGS,                HDHR_get_device_ip_requested_doc},
     {"get_tuner",               (PyCFunction)py_hdhr_get_tuner,               METH_NOARGS,                HDHR_get_tuner_doc},
     {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
+    {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
 
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
