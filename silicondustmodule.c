@@ -502,6 +502,9 @@ static PyObject *py_hdhr_get_tuner(py_hdhr_object *self)
     return PyLong_FromUnsignedLong((unsigned long)tuner_number);
 }
 
+PyDoc_STRVAR(HDHR_set_device_doc,
+    "Set the device to which this object points.");
+
 static PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObject *kwds)
 {
     unsigned int device_id = 0;
