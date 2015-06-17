@@ -491,6 +491,17 @@ static PyObject *py_hdhr_get_device_ip_requested(py_hdhr_object *self)
     return PyLong_FromUnsignedLong((unsigned long)device_ip);
 }
 
+PyDoc_STRVAR(HDHR_get_tuner_doc,
+    "Get the tuner number that this HDHR object references.");
+
+static PyObject *py_hdhr_get_tuner(py_hdhr_object *self)
+{
+    unsigned int tuner_number;
+
+    tuner_number = hdhomerun_device_get_tuner(self->hd);
+    return PyLong_FromUnsignedLong((unsigned long)tuner_number);
+}
+
 static PyMethodDef py_hdhr_methods[] =
 {
     {"discover",      (PyCFunction)py_hdhr_discover,      METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
@@ -509,6 +520,7 @@ static PyMethodDef py_hdhr_methods[] =
     {"get_device_ip", (PyCFunction)py_hdhr_get_device_ip, METH_NOARGS,                HDHR_get_device_ip_doc},
     {"get_device_id_requested", (PyCFunction)py_hdhr_get_device_id_requested, METH_NOARGS,                HDHR_get_device_id_requested_doc},
     {"get_device_ip_requested", (PyCFunction)py_hdhr_get_device_ip_requested, METH_NOARGS,                HDHR_get_device_ip_requested_doc},
+    {"get_tuner",     (PyCFunction)py_hdhr_get_tuner,     METH_NOARGS,                HDHR_get_tuner_doc},
     {NULL,            NULL,                               0,                          NULL}  /* Sentinel */
 };
 
