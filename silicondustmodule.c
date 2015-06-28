@@ -547,6 +547,32 @@ static PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObjec
     }
 }
 
+PyDoc_STRVAR(HDHR_set_tuner_from_str_doc,
+    "Set the tuner which this object references.");
+
+static PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+    const char *tuner = NULL;
+    char *kwlist[] = {"tuner", NULL};
+    int success;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &tuner))
+        return NULL;
+
+    success = hdhomerun_device_set_tuner_from_str(self->hd, tuner);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "failed to set tuner from string");
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -558,7 +584,7 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner",               (PyCFunction)py_hdhr_get_tuner,               METH_NOARGS,                HDHR_get_tuner_doc},
     {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
     {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
-
+    {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_set_tuner_from_str_doc},
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
