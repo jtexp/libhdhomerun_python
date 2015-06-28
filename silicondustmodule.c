@@ -357,11 +357,71 @@ static PyObject *py_hdhr_stream_stop(py_hdhr_object *self) {
     Py_RETURN_NONE;
 }
 
+/* Internal */
+static PyObject *build_tuner_status_dict(struct hdhomerun_tuner_status_t *status) {
+    PyObject *rv, *dv;
+
+    rv = PyDict_New();
+    if(!rv) return NULL;
+
+    /* https://mail.python.org/pipermail/capi-sig/2010-July/000414.html */
+    dv = PyString_FromString(status->channel);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "channel", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyString_FromString(status->lock_str);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "lock_str", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyBool_FromLong((long)status->signal_present);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "signal_present", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyBool_FromLong((long)status->lock_supported);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "lock_supported", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyBool_FromLong((long)status->lock_unsupported);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "lock_unsupported", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status->signal_strength);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "signal_strength", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status->signal_to_noise_quality);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "signal_to_noise_quality", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status->symbol_error_quality);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "symbol_error_quality", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status->raw_bits_per_second);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "raw_bits_per_second", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyLong_FromUnsignedLong((unsigned long)status->packets_per_second);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "packets_per_second", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    return rv;
+}
+
 PyDoc_STRVAR(HDHR_wait_for_lock_doc,
     "Wait for tuner lock after channel change.");
 
 static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
-    PyObject *rv, *dv;
     int success;
     struct hdhomerun_tuner_status_t status;
 
@@ -377,61 +437,7 @@ static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
         return NULL;
     }
 
-    rv = PyDict_New();
-    if(!rv) return NULL;
-
-    /* https://mail.python.org/pipermail/capi-sig/2010-July/000414.html */
-    dv = PyString_FromString(status.channel);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "channel", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyString_FromString(status.lock_str);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "lock_str", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyBool_FromLong((long)status.signal_present);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "signal_present", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyBool_FromLong((long)status.lock_supported);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "lock_supported", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyBool_FromLong((long)status.lock_unsupported);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "lock_unsupported", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyLong_FromUnsignedLong((unsigned long)status.signal_strength);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "signal_strength", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyLong_FromUnsignedLong((unsigned long)status.signal_to_noise_quality);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "signal_to_noise_quality", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyLong_FromUnsignedLong((unsigned long)status.symbol_error_quality);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "symbol_error_quality", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyLong_FromUnsignedLong((unsigned long)status.raw_bits_per_second);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "raw_bits_per_second", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    dv = PyLong_FromUnsignedLong((unsigned long)status.packets_per_second);
-    if(!dv) { Py_DECREF(rv); return NULL; }
-    if(PyDict_SetItemString(rv, "packets_per_second", dv) != 0) { Py_DECREF(rv); return NULL; }
-    Py_DECREF(dv);
-
-    return rv;
+    return build_tuner_status_dict(&status);
 }
 
 PyDoc_STRVAR(HDHR_get_name_doc,
@@ -573,6 +579,35 @@ static PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args
     }
 }
 
+PyDoc_STRVAR(HDHR_get_tuner_status_doc,
+    "Get the tuner's status");
+
+static PyObject *py_hdhr_get_tuner_status(py_hdhr_object *self) {
+    int success;
+    char *pstatus_str;
+    struct hdhomerun_tuner_status_t status;
+
+    success = hdhomerun_device_get_tuner_status(self->hd, &pstatus_str, &status);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "failed to get tuner status");
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+
+    /*
+     *  pstatus_str is a string that represents a subset of the structure contents,
+     *  which might look like this:
+     *    ch=qam:549000000 lock=qam256 ss=100 snq=91 seq=100 bps=13215648 pps=0
+     *  We can ignore it here since we return the complete contents of the struct as a dict.
+     */
+    return build_tuner_status_dict(&status);
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -585,6 +620,7 @@ static PyMethodDef py_hdhr_methods[] = {
     {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
     {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
     {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_set_tuner_from_str_doc},
+    {"get_tuner_status",        (PyCFunction)py_hdhr_get_tuner_status,        METH_NOARGS,                HDHR_get_tuner_status_doc},
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
