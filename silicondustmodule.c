@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 #include <Python.h>
 #include <structmember.h>
 #include <libhdhomerun/hdhomerun.h>
@@ -231,29 +232,14 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject 
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_lock_doc,
+PyDoc_STRVAR(HDHR_tuner_lockkey_request_doc,
     "Locks a tuner.");
 
-static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+static PyObject *py_hdhr_tuner_lockkey_request(py_hdhr_object *self) {
     char *ret_error = "the device rejected the lock request";
     int success;
-    int force = 0;
-    char *kwlist[] = {"force", NULL};
-    PyObject *force_obj = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O!", kwlist, &PyBool_Type, &force_obj))
-        return NULL;
-
-    if(force_obj != NULL) {
-        force = PyObject_IsTrue(force_obj);
-        if(force < 0)
-            return NULL;
-    }
-    if(force == 0) {
-        success = hdhomerun_device_tuner_lockkey_request(self->hd, &ret_error);
-    } else {
-        success = hdhomerun_device_tuner_lockkey_force(self->hd);
-    }
+    success = hdhomerun_device_tuner_lockkey_request(self->hd, &ret_error);
 
     if(success == -1) {
         PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
@@ -270,10 +256,33 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kw
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_unlock_doc,
+PyDoc_STRVAR(HDHR_tuner_lockkey_force_doc,
+    "Locks a tuner.");
+
+static PyObject *py_hdhr_tuner_lockkey_force(py_hdhr_object *self) {
+    int success;
+
+    success = hdhomerun_device_tuner_lockkey_force(self->hd);
+
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "the device rejected the forced lock request");
+        return NULL;
+    } else if(success == 1) {
+        self->locked = 1;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+PyDoc_STRVAR(HDHR_tuner_lockkey_release_doc,
     "Unlocks a tuner.");
 
-static PyObject *py_hdhr_unlock(py_hdhr_object *self) {
+static PyObject *py_hdhr_tuner_lockkey_release(py_hdhr_object *self) {
     int success;
 
     success = hdhomerun_device_tuner_lockkey_release(self->hd);
@@ -553,8 +562,9 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
-    {"lock",                    (PyCFunction)py_hdhr_lock,                    METH_KEYWORDS,              HDHR_lock_doc},
-    {"unlock",                  (PyCFunction)py_hdhr_unlock,                  METH_NOARGS,                HDHR_unlock_doc},
+    {"tuner_lockkey_request",   (PyCFunction)py_hdhr_tuner_lockkey_request,   METH_NOARGS,                HDHR_tuner_lockkey_request_doc},
+    {"tuner_lockkey_force",     (PyCFunction)py_hdhr_tuner_lockkey_force,     METH_NOARGS,                HDHR_tuner_lockkey_force_doc},
+    {"tuner_lockkey_release",   (PyCFunction)py_hdhr_tuner_lockkey_release,   METH_NOARGS,                HDHR_tuner_lockkey_release_doc},
     {"stream_start",            (PyCFunction)py_hdhr_stream_start,            METH_NOARGS,                HDHR_stream_start_doc},
     {"stream_recv",             (PyCFunction)py_hdhr_stream_recv,             METH_KEYWORDS,              HDHR_stream_recv_doc},
     {"stream_flush",            (PyCFunction)py_hdhr_stream_flush,            METH_NOARGS,                HDHR_stream_flush_doc},
