@@ -11,6 +11,7 @@ if len(devices) > 0:
         devices[0].set(item='/tuner0/vchannel', value='702')
         pprint(devices[0].wait_for_lock())
         pprint(devices[0].get_tuner_status())
+        pprint(devices[0].get_tuner_vstatus())
         print 'Tuner 0 vchannel: ' + devices[0].get(item='/tuner0/vchannel')
         print 'Tuner 0 channel: ' + devices[0].get(item='/tuner0/channel')
         print 'Tuner 0 channelmap: ' + devices[0].get(item='/tuner0/channelmap')

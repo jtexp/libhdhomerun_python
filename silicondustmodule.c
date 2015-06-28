@@ -608,6 +608,79 @@ static PyObject *py_hdhr_get_tuner_status(py_hdhr_object *self) {
     return build_tuner_status_dict(&status);
 }
 
+PyDoc_STRVAR(HDHR_get_tuner_vstatus_doc,
+    "Get the tuner's vstatus");
+
+static PyObject *py_hdhr_get_tuner_vstatus(py_hdhr_object *self) {
+    PyObject *rv, *dv;
+    int success;
+    char *pvstatus_str;
+    struct hdhomerun_tuner_vstatus_t vstatus;
+
+    success = hdhomerun_device_get_tuner_vstatus(self->hd, &pvstatus_str, &vstatus);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "failed to get tuner vstatus");
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+
+    /*
+     *  pvstatus_str is a string that represents a subset of the structure contents,
+     *  which might look like this:
+     *    vch=702 name=KTVUD auth=unspecified cci=none
+     *  We can ignore it here since we return the complete contents of the struct as a dict.
+     */
+    rv = PyDict_New();
+    if(!rv) return NULL;
+
+    dv = PyString_FromString(vstatus.vchannel);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "vchannel", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyString_FromString(vstatus.name);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "name", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyString_FromString(vstatus.auth);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "auth", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyString_FromString(vstatus.cci);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "cci", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyString_FromString(vstatus.cgms);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "cgms", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyBool_FromLong((long)vstatus.not_subscribed);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "not_subscribed", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyBool_FromLong((long)vstatus.not_available);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "not_available", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    dv = PyBool_FromLong((long)vstatus.copy_protected);
+    if(!dv) { Py_DECREF(rv); return NULL; }
+    if(PyDict_SetItemString(rv, "copy_protected", dv) != 0) { Py_DECREF(rv); return NULL; }
+    Py_DECREF(dv);
+
+    return rv;
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -620,7 +693,9 @@ static PyMethodDef py_hdhr_methods[] = {
     {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
     {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
     {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_set_tuner_from_str_doc},
+    /* Get operations. */
     {"get_tuner_status",        (PyCFunction)py_hdhr_get_tuner_status,        METH_NOARGS,                HDHR_get_tuner_status_doc},
+    {"get_tuner_vstatus",       (PyCFunction)py_hdhr_get_tuner_vstatus,       METH_NOARGS,                HDHR_get_tuner_vstatus_doc},
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
