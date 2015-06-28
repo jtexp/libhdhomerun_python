@@ -192,6 +192,11 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject 
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "sO!", kwlist, &filename, &PyBool_Type, &wait_obj))
         return NULL;
+    Py_INCREF(wait_obj);
+    wait = PyObject_IsTrue(wait_obj);
+    Py_DECREF(wait_obj);
+    if(wait < 0)
+        return NULL;
 
     fp = fopen(filename, "rb");
     if(!fp) {
@@ -209,9 +214,6 @@ static PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject 
         return NULL;
     }
 
-    wait = PyObject_IsTrue(wait_obj);
-    if(wait < 0)
-        return NULL;
     if(wait > 0) {
         /* Wait for the device to come back online */
         msleep_minimum(10000);
@@ -236,10 +238,12 @@ static PyObject *py_hdhr_lock(py_hdhr_object *self, PyObject *args, PyObject *kw
     char *ret_error = "the device rejected the lock request";
     int success;
     int force = 0;
+    char *kwlist[] = {"force", NULL};
     PyObject *force_obj = NULL;
 
-    if(!PyArg_ParseTuple(args, "|O!", &PyBool_Type, &force_obj))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O!", kwlist, &PyBool_Type, &force_obj))
         return NULL;
+
     if(force_obj != NULL) {
         force = PyObject_IsTrue(force_obj);
         if(force < 0)
