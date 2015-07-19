@@ -774,6 +774,72 @@ static PyObject *py_hdhr_get_tuner_channelmap(py_hdhr_object *self) {
     return PyString_FromString(pchannelmap);
 }
 
+PyDoc_STRVAR(HDHR_get_tuner_filter_doc,
+    "Get the tuner's filter");
+
+static PyObject *py_hdhr_get_tuner_filter(py_hdhr_object *self) {
+    int success;
+    char *pfilter = NULL;
+
+    success = hdhomerun_device_get_tuner_filter(self->hd, &pfilter);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(pfilter);
+}
+
+PyDoc_STRVAR(HDHR_get_tuner_program_doc,
+    "Get the tuner's program");
+
+static PyObject *py_hdhr_get_tuner_program(py_hdhr_object *self) {
+    int success;
+    char *pprogram = NULL;
+
+    success = hdhomerun_device_get_tuner_program(self->hd, &pprogram);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(pprogram);
+}
+
+PyDoc_STRVAR(HDHR_get_tuner_target_doc,
+    "Get the tuner's target");
+
+static PyObject *py_hdhr_get_tuner_target(py_hdhr_object *self) {
+    int success;
+    char *ptarget = NULL;
+
+    success = hdhomerun_device_get_tuner_target(self->hd, &ptarget);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(ptarget);
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -793,6 +859,9 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner_channel",       (PyCFunction)py_hdhr_get_tuner_channel,       METH_NOARGS,                HDHR_get_tuner_channel_doc},
     {"get_tuner_vchannel",      (PyCFunction)py_hdhr_get_tuner_vchannel,      METH_NOARGS,                HDHR_get_tuner_vchannel_doc},
     {"get_tuner_channelmap",    (PyCFunction)py_hdhr_get_tuner_channelmap,    METH_NOARGS,                HDHR_get_tuner_channelmap_doc},
+    {"get_tuner_filter",        (PyCFunction)py_hdhr_get_tuner_filter,        METH_NOARGS,                HDHR_get_tuner_filter_doc},
+    {"get_tuner_program",       (PyCFunction)py_hdhr_get_tuner_program,       METH_NOARGS,                HDHR_get_tuner_program_doc},
+    {"get_tuner_target",        (PyCFunction)py_hdhr_get_tuner_target,        METH_NOARGS,                HDHR_get_tuner_target_doc},
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
