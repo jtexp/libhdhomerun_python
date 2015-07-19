@@ -27,6 +27,7 @@
 #include <libhdhomerun/hdhomerun.h>
 
 /* String constants for use when raising exceptions */
+static const char *HDHR_ERR_REJECTED_OP = "the operation was rejected";
 static const char *HDHR_ERR_COMMUNICATION = "communication error sending request to hdhomerun device";
 static const char *HDHR_ERR_UNDOCUMENTED = "undocumented error reported by library";
 
@@ -596,7 +597,7 @@ static PyObject *py_hdhr_get_tuner_status(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the operation was rejected");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
         PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
@@ -626,7 +627,7 @@ static PyObject *py_hdhr_get_tuner_vstatus(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the operation was rejected");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
         PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
@@ -697,7 +698,7 @@ static PyObject *py_hdhr_get_tuner_streaminfo(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the operation was rejected");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
         PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
@@ -705,6 +706,72 @@ static PyObject *py_hdhr_get_tuner_streaminfo(py_hdhr_object *self) {
     }
 
     return PyString_FromString(pstreaminfo);
+}
+
+PyDoc_STRVAR(HDHR_get_tuner_channel_doc,
+    "Get the tuner's channel");
+
+static PyObject *py_hdhr_get_tuner_channel(py_hdhr_object *self) {
+    int success;
+    char *pchannel = NULL;
+
+    success = hdhomerun_device_get_tuner_channel(self->hd, &pchannel);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(pchannel);
+}
+
+PyDoc_STRVAR(HDHR_get_tuner_vchannel_doc,
+    "Get the tuner's vchannel");
+
+static PyObject *py_hdhr_get_tuner_vchannel(py_hdhr_object *self) {
+    int success;
+    char *pvchannel = NULL;
+
+    success = hdhomerun_device_get_tuner_vchannel(self->hd, &pvchannel);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(pvchannel);
+}
+
+PyDoc_STRVAR(HDHR_get_tuner_channelmap_doc,
+    "Get the tuner's channel map");
+
+static PyObject *py_hdhr_get_tuner_channelmap(py_hdhr_object *self) {
+    int success;
+    char *pchannelmap = NULL;
+
+    success = hdhomerun_device_get_tuner_channelmap(self->hd, &pchannelmap);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(pchannelmap);
 }
 
 static PyMethodDef py_hdhr_methods[] = {
@@ -723,6 +790,9 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner_status",        (PyCFunction)py_hdhr_get_tuner_status,        METH_NOARGS,                HDHR_get_tuner_status_doc},
     {"get_tuner_vstatus",       (PyCFunction)py_hdhr_get_tuner_vstatus,       METH_NOARGS,                HDHR_get_tuner_vstatus_doc},
     {"get_tuner_streaminfo",    (PyCFunction)py_hdhr_get_tuner_streaminfo,    METH_NOARGS,                HDHR_get_tuner_streaminfo_doc},
+    {"get_tuner_channel",       (PyCFunction)py_hdhr_get_tuner_channel,       METH_NOARGS,                HDHR_get_tuner_channel_doc},
+    {"get_tuner_vchannel",      (PyCFunction)py_hdhr_get_tuner_vchannel,      METH_NOARGS,                HDHR_get_tuner_vchannel_doc},
+    {"get_tuner_channelmap",    (PyCFunction)py_hdhr_get_tuner_channelmap,    METH_NOARGS,                HDHR_get_tuner_channelmap_doc},
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
