@@ -26,6 +26,10 @@
 #include <structmember.h>
 #include <libhdhomerun/hdhomerun.h>
 
+/* String constants for use when raising exceptions */
+static const char *HDHR_ERR_COMMUNICATION = "communication error sending request to hdhomerun device";
+static const char *HDHR_ERR_UNDOCUMENTED = "undocumented error reported by library";
+
 PyDoc_STRVAR(silicondust_module_doc,
     "Python bindings for the SiliconDust hdhomerun library");
 
@@ -137,7 +141,7 @@ static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwd
 
     success = hdhomerun_device_get_var(self->hd, item, &ret_value, &ret_error);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, ret_error);
@@ -145,7 +149,7 @@ static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwd
     } else if(success == 1) {
         return PyString_FromString(ret_value);
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -165,7 +169,7 @@ static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args, PyObject *kwd
 
     success = hdhomerun_device_set_var(self->hd, item, value, NULL, &ret_error);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, ret_error);
@@ -173,7 +177,7 @@ static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args, PyObject *kwd
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -242,7 +246,7 @@ static PyObject *py_hdhr_tuner_lockkey_request(py_hdhr_object *self) {
     success = hdhomerun_device_tuner_lockkey_request(self->hd, &ret_error);
 
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, ret_error);
@@ -250,7 +254,7 @@ static PyObject *py_hdhr_tuner_lockkey_request(py_hdhr_object *self) {
     } else if(success == 1) {
         self->locked = 1;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -265,7 +269,7 @@ static PyObject *py_hdhr_tuner_lockkey_force(py_hdhr_object *self) {
     success = hdhomerun_device_tuner_lockkey_force(self->hd);
 
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "the device rejected the forced lock request");
@@ -273,7 +277,7 @@ static PyObject *py_hdhr_tuner_lockkey_force(py_hdhr_object *self) {
     } else if(success == 1) {
         self->locked = 1;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -287,7 +291,7 @@ static PyObject *py_hdhr_tuner_lockkey_release(py_hdhr_object *self) {
 
     success = hdhomerun_device_tuner_lockkey_release(self->hd);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "the device rejected the unlock request");
@@ -295,7 +299,7 @@ static PyObject *py_hdhr_tuner_lockkey_release(py_hdhr_object *self) {
     } else if(success == 1) {
         self->locked = 0;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -309,13 +313,13 @@ static PyObject *py_hdhr_stream_start(py_hdhr_object *self) {
 
     success = hdhomerun_device_stream_start(self->hd);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "the device refused to start streaming");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -427,13 +431,13 @@ static PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
 
     success = hdhomerun_device_wait_for_lock(self->hd, &status);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "the device did not report lock status");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -514,7 +518,7 @@ static PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObje
 
     success = hdhomerun_device_set_device(self->hd, (uint32_t)device_id, (uint32_t)device_ip);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "failed to set device parameters");
@@ -522,7 +526,7 @@ static PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObje
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -540,7 +544,7 @@ static PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObjec
 
     success = hdhomerun_device_set_tuner(self->hd, tuner);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "failed to set tuner number");
@@ -548,7 +552,7 @@ static PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObjec
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -566,7 +570,7 @@ static PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args
 
     success = hdhomerun_device_set_tuner_from_str(self->hd, tuner);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(silicondust_hdhr_error, "failed to set tuner from string");
@@ -574,7 +578,7 @@ static PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -589,13 +593,13 @@ static PyObject *py_hdhr_get_tuner_status(py_hdhr_object *self) {
 
     success = hdhomerun_device_get_tuner_status(self->hd, &pstatus_str, &status);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "failed to get tuner status");
+        PyErr_SetString(silicondust_hdhr_error, "the operation was rejected");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -619,13 +623,13 @@ static PyObject *py_hdhr_get_tuner_vstatus(py_hdhr_object *self) {
 
     success = hdhomerun_device_get_tuner_vstatus(self->hd, &pvstatus_str, &vstatus);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "failed to get tuner vstatus");
+        PyErr_SetString(silicondust_hdhr_error, "the operation was rejected");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -690,13 +694,13 @@ static PyObject *py_hdhr_get_tuner_streaminfo(py_hdhr_object *self) {
 
     success = hdhomerun_device_get_tuner_streaminfo(self->hd, &pstreaminfo);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "failed to get tuner stream info");
+        PyErr_SetString(silicondust_hdhr_error, "the operation was rejected");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
