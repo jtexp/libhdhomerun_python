@@ -681,6 +681,28 @@ static PyObject *py_hdhr_get_tuner_vstatus(py_hdhr_object *self) {
     return rv;
 }
 
+PyDoc_STRVAR(HDHR_get_tuner_streaminfo_doc,
+    "Get the tuner's stream info");
+
+static PyObject *py_hdhr_get_tuner_streaminfo(py_hdhr_object *self) {
+    int success;
+    char *pstreaminfo = NULL;
+
+    success = hdhomerun_device_get_tuner_streaminfo(self->hd, &pstreaminfo);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, "communication error sending request to hdhomerun device");
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "failed to get tuner stream info");
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, "undocumented error reported by library");
+        return NULL;
+    }
+
+    return PyString_FromString(pstreaminfo);
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -696,6 +718,7 @@ static PyMethodDef py_hdhr_methods[] = {
     /* Get operations. */
     {"get_tuner_status",        (PyCFunction)py_hdhr_get_tuner_status,        METH_NOARGS,                HDHR_get_tuner_status_doc},
     {"get_tuner_vstatus",       (PyCFunction)py_hdhr_get_tuner_vstatus,       METH_NOARGS,                HDHR_get_tuner_vstatus_doc},
+    {"get_tuner_streaminfo",    (PyCFunction)py_hdhr_get_tuner_streaminfo,    METH_NOARGS,                HDHR_get_tuner_streaminfo_doc},
     {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
     {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
