@@ -1038,8 +1038,14 @@ static PyObject *py_hdhr_get_supported(py_hdhr_object *self, PyObject *args, PyO
     return PyString_FromString(pstr);
 }
 
+PyDoc_STRVAR(HDHR_copy_doc,
+    "Copy the HDHR object");
+
+static PyObject *py_hdhr_copy(py_hdhr_object *self);
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
+    {"copy",                    (PyCFunction)py_hdhr_copy,                    METH_NOARGS,                HDHR_copy_doc},
     /* Get the device id, ip, or tuner of the device instance. */
     {"get_name",                (PyCFunction)py_hdhr_get_name,                METH_NOARGS,                HDHR_get_name_doc},
     {"get_device_id",           (PyCFunction)py_hdhr_get_device_id,           METH_NOARGS,                HDHR_get_device_id_doc},
@@ -1130,6 +1136,21 @@ static PyTypeObject silicondust_hdhr_type = {
     (newfunc)PyType_GenericNew,     /* tp_new */
     (freefunc)PyObject_Del,         /* tp_free */
 };
+
+static PyObject *py_hdhr_copy(py_hdhr_object *self) {
+    PyObject *arg_list, *copied_obj;
+    uint32_t device_id, device_ip;
+
+    device_id = hdhomerun_device_get_device_id(self->hd);
+    device_ip = hdhomerun_device_get_device_ip(self->hd);
+    arg_list = Py_BuildValue("(III)", device_id, device_ip, self->tuner_count);
+    if(arg_list == NULL) {
+        return NULL;
+    }
+    copied_obj = PyObject_CallObject((PyObject *)&silicondust_hdhr_type, arg_list);
+    Py_DECREF(arg_list);
+    return copied_obj;
+}
 
 /* module methods (none for now) */
 static PyMethodDef silicondust_methods[] = {
