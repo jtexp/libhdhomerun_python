@@ -903,6 +903,69 @@ static PyObject *py_hdhr_get_tuner_lockkey_owner(py_hdhr_object *self) {
     return PyString_FromString(powner);
 }
 
+PyDoc_STRVAR(HDHR_get_oob_status_doc,
+    "Get the device's OOB status");
+
+static PyObject *py_hdhr_get_oob_status(py_hdhr_object *self) {
+    int success;
+    char *pstatus_str;
+    struct hdhomerun_tuner_status_t status;
+
+    success = hdhomerun_device_get_oob_status(self->hd, &pstatus_str, &status);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return build_tuner_status_dict(&status);
+}
+
+PyDoc_STRVAR(HDHR_get_oob_plotsample_doc,
+    "Get the OOB plot sample");
+
+static PyObject *py_hdhr_get_oob_plotsample(py_hdhr_object *self) {
+    int success, i;
+    size_t pcount;
+    struct hdhomerun_plotsample_t *psamples = NULL;
+    PyObject *sample_list, *sample;
+
+    success = hdhomerun_device_get_oob_plotsample(self->hd, &psamples, &pcount);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    sample_list = PyList_New((Py_ssize_t)pcount);
+    if(!sample_list)
+        return NULL;
+    if(pcount == 0)
+        return sample_list;
+    for(i=0; i<pcount; i++) {
+        sample = PyComplex_FromDoubles((double)psamples[i].real, (double)psamples[i].imag);
+        if(sample == NULL) {
+            Py_DECREF(sample_list);
+            return NULL;
+        }
+        if(PyList_SetItem(sample_list, (Py_ssize_t)i, sample) != 0) {
+            Py_DECREF(sample_list);
+            return NULL;
+        }
+    }
+    return sample_list;
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -927,6 +990,8 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner_target",        (PyCFunction)py_hdhr_get_tuner_target,        METH_NOARGS,                HDHR_get_tuner_target_doc},
     {"get_tuner_plotsample",    (PyCFunction)py_hdhr_get_tuner_plotsample,    METH_NOARGS,                HDHR_get_tuner_plotsample_doc},
     {"get_tuner_lockkey_owner", (PyCFunction)py_hdhr_get_tuner_lockkey_owner, METH_NOARGS,                HDHR_get_tuner_lockkey_owner_doc},
+    {"get_oob_status",          (PyCFunction)py_hdhr_get_oob_status,          METH_NOARGS,                HDHR_get_oob_status_doc},
+    {"get_oob_plotsample",      (PyCFunction)py_hdhr_get_oob_plotsample,      METH_NOARGS,                HDHR_get_oob_plotsample_doc},
     {"get_var",                 (PyCFunction)py_hdhr_get_var,                 METH_KEYWORDS,              HDHR_get_var_doc},
     {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_set_var_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
