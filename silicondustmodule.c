@@ -881,6 +881,28 @@ static PyObject *py_hdhr_get_tuner_plotsample(py_hdhr_object *self) {
     return sample_list;
 }
 
+PyDoc_STRVAR(HDHR_get_tuner_lockkey_owner_doc,
+    "Get the tuner's lock owner");
+
+static PyObject *py_hdhr_get_tuner_lockkey_owner(py_hdhr_object *self) {
+    int success;
+    char *powner = NULL;
+
+    success = hdhomerun_device_get_tuner_lockkey_owner(self->hd, &powner);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(powner);
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -904,6 +926,7 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner_program",       (PyCFunction)py_hdhr_get_tuner_program,       METH_NOARGS,                HDHR_get_tuner_program_doc},
     {"get_tuner_target",        (PyCFunction)py_hdhr_get_tuner_target,        METH_NOARGS,                HDHR_get_tuner_target_doc},
     {"get_tuner_plotsample",    (PyCFunction)py_hdhr_get_tuner_plotsample,    METH_NOARGS,                HDHR_get_tuner_plotsample_doc},
+    {"get_tuner_lockkey_owner", (PyCFunction)py_hdhr_get_tuner_lockkey_owner, METH_NOARGS,                HDHR_get_tuner_lockkey_owner_doc},
     {"get_var",                 (PyCFunction)py_hdhr_get_var,                 METH_KEYWORDS,              HDHR_get_var_doc},
     {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_set_var_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
