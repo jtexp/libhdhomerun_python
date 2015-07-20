@@ -24,6 +24,7 @@ if len(devices) > 0:
         print devices[0].get_tuner_filter()
         print devices[0].get_tuner_program()
         print devices[0].get_tuner_target()
+        #print devices[0].get_tuner_plotsample()
         devices[0].tuner_lockkey_release()
     except HDHRError as sd_error:
         print 'Failure: ' + str(sd_error)
