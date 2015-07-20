@@ -966,6 +966,78 @@ static PyObject *py_hdhr_get_oob_plotsample(py_hdhr_object *self) {
     return sample_list;
 }
 
+PyDoc_STRVAR(HDHR_get_ir_target_doc,
+    "Get the device's IR target");
+
+static PyObject *py_hdhr_get_ir_target(py_hdhr_object *self) {
+    int success;
+    char *ptarget = NULL;
+
+    success = hdhomerun_device_get_ir_target(self->hd, &ptarget);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(ptarget);
+}
+
+PyDoc_STRVAR(HDHR_get_version_doc,
+    "Get the device's firmware version");
+
+static PyObject *py_hdhr_get_version(py_hdhr_object *self) {
+    int success;
+    uint32_t version_num;
+    char *pversion_str = NULL;
+
+    success = hdhomerun_device_get_version(self->hd, &pversion_str, &version_num);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return Py_BuildValue("(sk)", pversion_str, version_num);
+}
+
+PyDoc_STRVAR(HDHR_get_supported_doc,
+    "Get supported");
+
+static PyObject *py_hdhr_get_supported(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+    int success;
+    char *pstr = NULL;
+    char *prefix = NULL;
+    char *kwlist[] = {"prefix", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &prefix))
+        return NULL;
+
+    success = hdhomerun_device_get_supported(self->hd, prefix, &pstr);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success != 1) {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+
+    return PyString_FromString(pstr);
+}
+
 static PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     /* Get the device id, ip, or tuner of the device instance. */
@@ -992,6 +1064,9 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner_lockkey_owner", (PyCFunction)py_hdhr_get_tuner_lockkey_owner, METH_NOARGS,                HDHR_get_tuner_lockkey_owner_doc},
     {"get_oob_status",          (PyCFunction)py_hdhr_get_oob_status,          METH_NOARGS,                HDHR_get_oob_status_doc},
     {"get_oob_plotsample",      (PyCFunction)py_hdhr_get_oob_plotsample,      METH_NOARGS,                HDHR_get_oob_plotsample_doc},
+    {"get_ir_target",           (PyCFunction)py_hdhr_get_ir_target,           METH_NOARGS,                HDHR_get_ir_target_doc},
+    {"get_version",             (PyCFunction)py_hdhr_get_version,             METH_NOARGS,                HDHR_get_version_doc},
+    {"get_supported",           (PyCFunction)py_hdhr_get_supported,           METH_KEYWORDS,              HDHR_get_supported_doc},
     {"get_var",                 (PyCFunction)py_hdhr_get_var,                 METH_KEYWORDS,              HDHR_get_var_doc},
     {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_set_var_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
