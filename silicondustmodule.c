@@ -127,10 +127,10 @@ static PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds)
     return result;
 }
 
-PyDoc_STRVAR(HDHR_get_doc,
+PyDoc_STRVAR(HDHR_get_var_doc,
     "Get a named control variable on the device.");
 
-static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+static PyObject *py_hdhr_get_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
     char *ret_value = NULL;
     char *ret_error = "the get operation was rejected by the device";
     char *item = NULL;
@@ -155,10 +155,10 @@ static PyObject *py_hdhr_get(py_hdhr_object *self, PyObject *args, PyObject *kwd
     }
 }
 
-PyDoc_STRVAR(HDHR_set_doc,
+PyDoc_STRVAR(HDHR_set_var_doc,
     "Set a named control variable on the device.");
 
-static PyObject *py_hdhr_set(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+static PyObject *py_hdhr_set_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
     char *ret_error = "the set operation was rejected by the device";
     char *item = NULL;
     char *value = NULL;
@@ -904,8 +904,8 @@ static PyMethodDef py_hdhr_methods[] = {
     {"get_tuner_program",       (PyCFunction)py_hdhr_get_tuner_program,       METH_NOARGS,                HDHR_get_tuner_program_doc},
     {"get_tuner_target",        (PyCFunction)py_hdhr_get_tuner_target,        METH_NOARGS,                HDHR_get_tuner_target_doc},
     {"get_tuner_plotsample",    (PyCFunction)py_hdhr_get_tuner_plotsample,    METH_NOARGS,                HDHR_get_tuner_plotsample_doc},
-    {"get",                     (PyCFunction)py_hdhr_get,                     METH_KEYWORDS,              HDHR_get_doc},
-    {"set",                     (PyCFunction)py_hdhr_set,                     METH_KEYWORDS,              HDHR_set_doc},
+    {"get_var",                 (PyCFunction)py_hdhr_get_var,                 METH_KEYWORDS,              HDHR_get_var_doc},
+    {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_set_var_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
     {"tuner_lockkey_request",   (PyCFunction)py_hdhr_tuner_lockkey_request,   METH_NOARGS,                HDHR_tuner_lockkey_request_doc},
     {"tuner_lockkey_force",     (PyCFunction)py_hdhr_tuner_lockkey_force,     METH_NOARGS,                HDHR_tuner_lockkey_force_doc},
