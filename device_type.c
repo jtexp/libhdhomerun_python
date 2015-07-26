@@ -110,34 +110,6 @@ PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
     return result;
 }
 
-PyDoc_STRVAR(HDHR_set_var_doc,
-    "Set a named control variable on the device.");
-
-PyObject *py_hdhr_set_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
-    char *ret_error = "the set operation was rejected by the device";
-    char *item = NULL;
-    char *value = NULL;
-    int success;
-    char *kwlist[] = {"item", "value", NULL};
-
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ss", kwlist, &item, &value))
-        return NULL;
-
-    success = hdhomerun_device_set_var(self->hd, item, value, NULL, &ret_error);
-    if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
-        return NULL;
-    } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, ret_error);
-        return NULL;
-    } else if(success == 1) {
-        Py_RETURN_NONE;
-    } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
-        return NULL;
-    }
-}
-
 PyDoc_STRVAR(HDHR_upgrade_doc,
     "Uploads and installs a firmware image on a HDHomeRun device.");
 
@@ -339,91 +311,13 @@ PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
     return build_tuner_status_dict(&status);
 }
 
-PyDoc_STRVAR(HDHR_set_device_doc,
-    "Set the device to which this object points.");
-
-PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
-    unsigned int device_id = 0;
-    unsigned int device_ip = 0;
-    char *kwlist[] = {"device_id", "device_ip", NULL};
-    int success;
-
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "II", kwlist, &device_id, &device_ip))
-        return NULL;
-
-    success = hdhomerun_device_set_device(self->hd, (uint32_t)device_id, (uint32_t)device_ip);
-    if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
-        return NULL;
-    } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "failed to set device parameters");
-        return NULL;
-    } else if(success == 1) {
-        Py_RETURN_NONE;
-    } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
-        return NULL;
-    }
-}
-
-PyDoc_STRVAR(HDHR_set_tuner_doc,
-    "Set the tuner which this object references.");
-
-PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
-    unsigned int tuner = 0;
-    char *kwlist[] = {"tuner", NULL};
-    int success;
-
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwlist, &tuner))
-        return NULL;
-
-    success = hdhomerun_device_set_tuner(self->hd, tuner);
-    if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
-        return NULL;
-    } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "failed to set tuner number");
-        return NULL;
-    } else if(success == 1) {
-        Py_RETURN_NONE;
-    } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
-        return NULL;
-    }
-}
-
-PyDoc_STRVAR(HDHR_set_tuner_from_str_doc,
-    "Set the tuner which this object references.");
-
-PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
-    const char *tuner = NULL;
-    char *kwlist[] = {"tuner", NULL};
-    int success;
-
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &tuner))
-        return NULL;
-
-    success = hdhomerun_device_set_tuner_from_str(self->hd, tuner);
-    if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
-        return NULL;
-    } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "failed to set tuner from string");
-        return NULL;
-    } else if(success == 1) {
-        Py_RETURN_NONE;
-    } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
-        return NULL;
-    }
-}
-
 PyDoc_STRVAR(HDHR_copy_doc,
     "Copy the HDHR object");
 
 PyObject *py_hdhr_copy(py_hdhr_object *self);
 
 PyMethodDef py_hdhr_methods[] = {
+    /* Python methods for the HDHR class, not language bindings for libhdhomerun */
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     {"copy",                    (PyCFunction)py_hdhr_copy,                    METH_NOARGS,                HDHR_copy_doc},
     /* Get operations, defined in device_get.c */
@@ -451,10 +345,11 @@ PyMethodDef py_hdhr_methods[] = {
     {"get_version",             (PyCFunction)py_hdhr_get_version,             METH_NOARGS,                HDHR_DOC_get_version},
     {"get_supported",           (PyCFunction)py_hdhr_get_supported,           METH_KEYWORDS,              HDHR_DOC_get_supported},
     /* Set operations, defined in device_set.c */
-    {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
-    {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
-    {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_set_tuner_from_str_doc},
-    {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_set_var_doc},
+    {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_DOC_set_device},
+    {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_DOC_set_tuner},
+    {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_DOC_set_tuner_from_str},
+    {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_DOC_set_var},
+    /* Misc. operations */
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
     {"tuner_lockkey_request",   (PyCFunction)py_hdhr_tuner_lockkey_request,   METH_NOARGS,                HDHR_tuner_lockkey_request_doc},
     {"tuner_lockkey_force",     (PyCFunction)py_hdhr_tuner_lockkey_force,     METH_NOARGS,                HDHR_tuner_lockkey_force_doc},

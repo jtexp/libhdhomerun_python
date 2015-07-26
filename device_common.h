@@ -118,4 +118,18 @@ PyObject *py_hdhr_get_version(py_hdhr_object *);
 extern const char HDHR_DOC_get_supported[];
 PyObject *py_hdhr_get_supported(py_hdhr_object *, PyObject *, PyObject *);
 
-#endif
+/* Defined in device_set.c */
+
+extern const char HDHR_DOC_set_device[];
+PyObject *py_hdhr_set_device(py_hdhr_object *, PyObject *, PyObject *);
+
+extern const char HDHR_DOC_set_tuner[];
+PyObject *py_hdhr_set_tuner(py_hdhr_object *, PyObject *, PyObject *);
+
+extern const char HDHR_DOC_set_tuner_from_str[];
+PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *, PyObject *, PyObject *);
+
+extern const char HDHR_DOC_set_var[];
+PyObject *py_hdhr_set_var(py_hdhr_object *, PyObject *, PyObject *);
+
+#endif /* _DEVICE_COMMON_H */
