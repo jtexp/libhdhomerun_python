@@ -427,7 +427,7 @@ PyObject *py_hdhr_copy(py_hdhr_object *self);
 PyMethodDef py_hdhr_methods[] = {
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
     {"copy",                    (PyCFunction)py_hdhr_copy,                    METH_NOARGS,                HDHR_copy_doc},
-    /* Get the device id, ip, or tuner of the device instance. */
+    /* Get operations, defined in device_get.c */
     {"get_name",                (PyCFunction)py_hdhr_get_name,                METH_NOARGS,                HDHR_DOC_get_name},
     {"get_device_id",           (PyCFunction)py_hdhr_get_device_id,           METH_NOARGS,                HDHR_DOC_get_device_id},
     {"get_device_ip",           (PyCFunction)py_hdhr_get_device_ip,           METH_NOARGS,                HDHR_DOC_get_device_ip},
@@ -435,10 +435,6 @@ PyMethodDef py_hdhr_methods[] = {
     {"get_device_ip_requested", (PyCFunction)py_hdhr_get_device_ip_requested, METH_NOARGS,                HDHR_DOC_get_device_ip_requested},
     {"get_tuner",               (PyCFunction)py_hdhr_get_tuner,               METH_NOARGS,                HDHR_DOC_get_tuner},
     {"get_var",                 (PyCFunction)py_hdhr_get_var,                 METH_KEYWORDS,              HDHR_DOC_get_var},
-    {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
-    {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
-    {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_set_tuner_from_str_doc},
-    /* Get operations. */
     {"get_tuner_status",        (PyCFunction)py_hdhr_get_tuner_status,        METH_NOARGS,                HDHR_DOC_get_tuner_status},
     {"get_tuner_vstatus",       (PyCFunction)py_hdhr_get_tuner_vstatus,       METH_NOARGS,                HDHR_DOC_get_tuner_vstatus},
     {"get_tuner_streaminfo",    (PyCFunction)py_hdhr_get_tuner_streaminfo,    METH_NOARGS,                HDHR_DOC_get_tuner_streaminfo},
@@ -455,6 +451,10 @@ PyMethodDef py_hdhr_methods[] = {
     {"get_ir_target",           (PyCFunction)py_hdhr_get_ir_target,           METH_NOARGS,                HDHR_DOC_get_ir_target},
     {"get_version",             (PyCFunction)py_hdhr_get_version,             METH_NOARGS,                HDHR_DOC_get_version},
     {"get_supported",           (PyCFunction)py_hdhr_get_supported,           METH_KEYWORDS,              HDHR_DOC_get_supported},
+    /* Set operations, defined in device_set.c */
+    {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_set_device_doc},
+    {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_set_tuner_doc},
+    {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_set_tuner_from_str_doc},
     {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_set_var_doc},
     {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
     {"tuner_lockkey_request",   (PyCFunction)py_hdhr_tuner_lockkey_request,   METH_NOARGS,                HDHR_tuner_lockkey_request_doc},
