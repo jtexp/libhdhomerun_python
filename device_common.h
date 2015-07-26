@@ -1,5 +1,5 @@
 /*
- * silicondustmodule.c
+ * device_common.h
  *
  * Copyright © 2015 Michael Mohr <akihana@gmail.com>.
  *

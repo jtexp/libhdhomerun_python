@@ -7,6 +7,7 @@ source_files = [
     'device_common.c',
     'device_get.c',
     'device_type.c',
+    'device_set.c',
 ]
 
 module = Extension(

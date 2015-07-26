@@ -1,5 +1,5 @@
 /*
- * silicondustmodule.c
+ * device_get.c
  *
  * Copyright © 2015 Michael Mohr <akihana@gmail.com>.
  *
