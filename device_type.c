@@ -311,15 +311,15 @@ PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
     return build_tuner_status_dict(&status);
 }
 
-PyDoc_STRVAR(HDHR_copy_doc,
-    "Copy the HDHR object");
+PyDoc_STRVAR(HDHR_DOC_clone,
+    "Clone the HDHR object");
 
-PyObject *py_hdhr_copy(py_hdhr_object *self);
+PyObject *py_hdhr_clone(py_hdhr_object *self);
 
 PyMethodDef py_hdhr_methods[] = {
     /* Python methods for the HDHR class, not language bindings for libhdhomerun */
     {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
-    {"copy",                    (PyCFunction)py_hdhr_copy,                    METH_NOARGS,                HDHR_copy_doc},
+    {"clone",                   (PyCFunction)py_hdhr_clone,                   METH_NOARGS,                HDHR_DOC_clone},
     /* Get operations, defined in device_get.c */
     {"get_name",                (PyCFunction)py_hdhr_get_name,                METH_NOARGS,                HDHR_DOC_get_name},
     {"get_device_id",           (PyCFunction)py_hdhr_get_device_id,           METH_NOARGS,                HDHR_DOC_get_device_id},
@@ -413,7 +413,7 @@ PyTypeObject silicondust_hdhr_type = {
     (freefunc)PyObject_Del,         /* tp_free */
 };
 
-PyObject *py_hdhr_copy(py_hdhr_object *self) {
+PyObject *py_hdhr_clone(py_hdhr_object *self) {
     PyObject *arg_list, *copied_obj;
     uint32_t device_id, device_ip;
 

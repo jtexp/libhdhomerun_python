@@ -26,7 +26,7 @@ if len(devices) > 0:
         print devices[0].get_tuner_filter()
         print devices[0].get_tuner_program()
         print devices[0].get_tuner_target()
-        xx = devices[0].copy()
+        xx = devices[0].clone()
         print 'OOB status: ' + str(xx.get_oob_status())
         print 'Versions: %s %d' % xx.get_version()
         #print 'Supported: %s' % devices[0].get_supported(prefix='tuner')
