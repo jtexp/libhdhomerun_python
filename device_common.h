@@ -32,7 +32,6 @@
 typedef struct {
     PyObject_HEAD
     struct hdhomerun_device_t *hd;
-    unsigned int tuner_count;
     unsigned int locked;
 } py_device_object;
 

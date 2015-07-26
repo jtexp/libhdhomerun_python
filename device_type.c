@@ -29,17 +29,15 @@ PyObject *hdhomerun_device_error = NULL;
 int py_device_init(py_device_object *self, PyObject *args, PyObject *kwds) {
     unsigned int device_id = 0;
     unsigned int device_ip = 0;
-    unsigned int tuner_count = 0;
-    char *kwlist[] = {"device_id", "device_ip", "tuner_count", NULL};
+    char *kwlist[] = {"device_id", "device_ip", NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "III", kwlist, &device_id, &device_ip, &tuner_count))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "II", kwlist, &device_id, &device_ip))
         return -1;
     self->hd = hdhomerun_device_create(device_id, device_ip, 0, NULL);
     if(!self->hd) {
         PyErr_SetString(hdhomerun_device_error, "Failed to initialize Device object");
         return -1;
     }
-    self->tuner_count = tuner_count;
     self->locked = 0;
     return 0;
 }
@@ -52,7 +50,6 @@ void py_device_dealloc(py_device_object *self) {
     }
     hdhomerun_device_destroy(self->hd);
     self->hd = NULL;
-    self->tuner_count = 0;
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -101,7 +98,7 @@ PyObject *py_device_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
 
     if(count > 0) {
         for(i=0; i<count; i++) {
-            tuner = PyObject_CallFunction(cls, "III", result_list[i].device_id, result_list[i].ip_addr, result_list[i].tuner_count);
+            tuner = PyObject_CallFunction(cls, "II", result_list[i].device_id, result_list[i].ip_addr);
             if(tuner == NULL) { Py_DECREF(result); return NULL; }
             if(PyList_SetItem(result, i, tuner) != 0) { Py_DECREF(result); return NULL; }
         }
@@ -419,7 +416,7 @@ PyObject *py_device_clone(py_device_object *self) {
 
     device_id = hdhomerun_device_get_device_id(self->hd);
     device_ip = hdhomerun_device_get_device_ip(self->hd);
-    arg_list = Py_BuildValue("(III)", device_id, device_ip, self->tuner_count);
+    arg_list = Py_BuildValue("(II)", device_id, device_ip);
     if(arg_list == NULL) {
         return NULL;
     }
