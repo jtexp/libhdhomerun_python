@@ -41,6 +41,8 @@ extern const char * const HDHR_ERR_REJECTED_OP;
 extern const char * const HDHR_ERR_COMMUNICATION;
 extern const char * const HDHR_ERR_UNDOCUMENTED;
 
+extern PyObject *silicondust_hdhr_error;
+
 /* Internal */
 PyObject *build_tuner_status_dict(struct hdhomerun_tuner_status_t *);
 
