@@ -20,7 +20,6 @@
  */
 
 #include "device_common.h"
-#include "device_get.h"
 
 PyDoc_STRVAR(silicondust_module_doc,
     "Python bindings for the SiliconDust hdhomerun library");

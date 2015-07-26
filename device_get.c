@@ -19,7 +19,7 @@
  * MA 02110-1301 USA.
  */
 
-#include "device_get.h"
+#include "device_common.h"
 
 /*
  *  Functions which operate directly on the hdhomerun_device_t pointer
