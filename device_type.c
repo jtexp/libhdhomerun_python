@@ -27,11 +27,11 @@ PyDoc_STRVAR(hdhomerun_module_doc,
 PyObject *hdhomerun_device_error = NULL;
 
 int py_device_init(py_device_object *self, PyObject *args, PyObject *kwds) {
-    unsigned int device_id = 0;
+    unsigned int device_id = HDHOMERUN_DEVICE_ID_WILDCARD;
     unsigned int device_ip = 0;
-    char *kwlist[] = {"device_id", "device_ip", NULL};
+    char *kwlist[] = {"device_ip", "device_id", NULL};
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "II", kwlist, &device_id, &device_ip))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I|I", kwlist, &device_ip, &device_id))
         return -1;
     self->hd = hdhomerun_device_create(device_id, device_ip, 0, NULL);
     if(!self->hd) {
@@ -98,7 +98,7 @@ PyObject *py_device_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
 
     if(count > 0) {
         for(i=0; i<count; i++) {
-            tuner = PyObject_CallFunction(cls, "II", result_list[i].device_id, result_list[i].ip_addr);
+            tuner = PyObject_CallFunction(cls, "II", result_list[i].ip_addr, result_list[i].device_id);
             if(tuner == NULL) { Py_DECREF(result); return NULL; }
             if(PyList_SetItem(result, i, tuner) != 0) { Py_DECREF(result); return NULL; }
         }
@@ -416,7 +416,7 @@ PyObject *py_device_clone(py_device_object *self) {
 
     device_id = hdhomerun_device_get_device_id(self->hd);
     device_ip = hdhomerun_device_get_device_ip(self->hd);
-    arg_list = Py_BuildValue("(II)", device_id, device_ip);
+    arg_list = Py_BuildValue("(II)", device_ip, device_id);
     if(arg_list == NULL) {
         return NULL;
     }
