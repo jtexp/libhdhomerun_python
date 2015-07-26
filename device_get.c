@@ -93,12 +93,12 @@ PyObject *py_hdhr_get_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) 
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, ret_error);
+        PyErr_SetString(hdhomerun_device_error, ret_error);
         return NULL;
     } else if(success == 1) {
         return PyString_FromString(ret_value);
     } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -114,10 +114,10 @@ PyObject *py_hdhr_get_tuner_status(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -142,10 +142,10 @@ PyObject *py_hdhr_get_tuner_vstatus(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -211,10 +211,10 @@ PyObject *py_hdhr_get_tuner_streaminfo(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -231,10 +231,10 @@ PyObject *py_hdhr_get_tuner_channel(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -251,10 +251,10 @@ PyObject *py_hdhr_get_tuner_vchannel(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -271,10 +271,10 @@ PyObject *py_hdhr_get_tuner_channelmap(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -291,10 +291,10 @@ PyObject *py_hdhr_get_tuner_filter(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -311,10 +311,10 @@ PyObject *py_hdhr_get_tuner_program(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -331,10 +331,10 @@ PyObject *py_hdhr_get_tuner_target(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -354,10 +354,10 @@ PyObject *py_hdhr_get_tuner_plotsample(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -390,10 +390,10 @@ PyObject *py_hdhr_get_tuner_lockkey_owner(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -411,10 +411,10 @@ PyObject *py_hdhr_get_oob_status(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -433,10 +433,10 @@ PyObject *py_hdhr_get_oob_plotsample(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -469,10 +469,10 @@ PyObject *py_hdhr_get_ir_target(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -490,10 +490,10 @@ PyObject *py_hdhr_get_version(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -515,10 +515,10 @@ PyObject *py_hdhr_get_supported(py_hdhr_object *self, PyObject *args, PyObject *
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_REJECTED_OP);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_REJECTED_OP);
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 

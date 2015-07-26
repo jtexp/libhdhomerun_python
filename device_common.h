@@ -37,7 +37,7 @@ typedef struct {
 } py_hdhr_object;
 
 /* Defined in device_type.c */
-extern PyObject *silicondust_hdhr_error;
+extern PyObject *hdhomerun_device_error;
 
 /* Defined in device_common.c */
 PyObject *build_tuner_status_dict(struct hdhomerun_tuner_status_t *);

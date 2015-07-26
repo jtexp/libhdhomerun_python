@@ -11,7 +11,7 @@ source_files = [
 ]
 
 module = Extension(
-    name = 'silicondust',
+    name = 'hdhomerun',
     sources = source_files,
     libraries = ['hdhomerun'],
     include_dirs = ['libhdhomerun'],
@@ -20,7 +20,7 @@ module = Extension(
 )
 
 setup(
-    name='silicondust',
+    name='hdhomerun',
     version='1.0',
     ext_modules=[module],
 )

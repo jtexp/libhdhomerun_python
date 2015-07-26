@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from pprint import pprint
-from silicondust import HDHR, HDHRError
+from hdhomerun import HDHR, HDHRError
 
 devices = HDHR.discover()
 if len(devices) > 0:

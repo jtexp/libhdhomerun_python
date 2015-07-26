@@ -21,10 +21,10 @@
 
 #include "device_common.h"
 
-PyDoc_STRVAR(silicondust_module_doc,
+PyDoc_STRVAR(hdhomerun_module_doc,
     "Python bindings for the SiliconDust hdhomerun library");
 
-PyObject *silicondust_hdhr_error = NULL;
+PyObject *hdhomerun_device_error = NULL;
 
 int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
     unsigned int device_id = 0;
@@ -36,7 +36,7 @@ int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
         return -1;
     self->hd = hdhomerun_device_create(device_id, device_ip, 0, NULL);
     if(!self->hd) {
-        PyErr_SetString(silicondust_hdhr_error, "Failed to create HDHR device");
+        PyErr_SetString(hdhomerun_device_error, "Failed to create HDHR device");
         return -1;
     }
     self->tuner_count = tuner_count;
@@ -82,7 +82,7 @@ PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
     if(target_ip_str) {
         target_ip = parse_ip_addr(target_ip_str);
         if (target_ip == 0) {
-            PyErr_SetString(silicondust_hdhr_error, "invalid ip address");
+            PyErr_SetString(hdhomerun_device_error, "invalid ip address");
             return NULL;
         }
     }
@@ -90,7 +90,7 @@ PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
     count = hdhomerun_discover_find_devices_custom(target_ip, HDHOMERUN_DEVICE_TYPE_TUNER, HDHOMERUN_DEVICE_ID_WILDCARD, result_list, 64);
 
     if(count < 0) {
-        PyErr_SetString(silicondust_hdhr_error, "error sending discover request");
+        PyErr_SetString(hdhomerun_device_error, "error sending discover request");
         return NULL;
     }
 
@@ -140,10 +140,10 @@ PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject *kwds) 
     fclose(fp);
     fp = NULL;
     if(success == -1) {
-        PyErr_SetString(silicondust_hdhr_error, "error sending upgrade file to hdhomerun device");
+        PyErr_SetString(hdhomerun_device_error, "error sending upgrade file to hdhomerun device");
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the hdhomerun device rejected the firmware upgrade");
+        PyErr_SetString(hdhomerun_device_error, "the hdhomerun device rejected the firmware upgrade");
         return NULL;
     }
 
@@ -155,7 +155,7 @@ PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject *kwds) 
                 break;
             count++;
             if (count > 30) {
-                PyErr_SetString(silicondust_hdhr_error, "error finding device after firmware upgrade");
+                PyErr_SetString(hdhomerun_device_error, "error finding device after firmware upgrade");
                 return NULL;
             }
             msleep_minimum(1000);
@@ -177,12 +177,12 @@ PyObject *py_hdhr_tuner_lockkey_request(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, ret_error);
+        PyErr_SetString(hdhomerun_device_error, ret_error);
         return NULL;
     } else if(success == 1) {
         self->locked = 1;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -200,12 +200,12 @@ PyObject *py_hdhr_tuner_lockkey_force(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the device rejected the forced lock request");
+        PyErr_SetString(hdhomerun_device_error, "the device rejected the forced lock request");
         return NULL;
     } else if(success == 1) {
         self->locked = 1;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -222,12 +222,12 @@ PyObject *py_hdhr_tuner_lockkey_release(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the device rejected the unlock request");
+        PyErr_SetString(hdhomerun_device_error, "the device rejected the unlock request");
         return NULL;
     } else if(success == 1) {
         self->locked = 0;
     } else {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -244,10 +244,10 @@ PyObject *py_hdhr_stream_start(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the device refused to start streaming");
+        PyErr_SetString(hdhomerun_device_error, "the device refused to start streaming");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -301,10 +301,10 @@ PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
         PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
-        PyErr_SetString(silicondust_hdhr_error, "the device did not report lock status");
+        PyErr_SetString(hdhomerun_device_error, "the device did not report lock status");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
         return NULL;
     }
 
@@ -367,13 +367,13 @@ PyMemberDef py_hdhr_members[] = {
     {NULL}  /* Sentinel */
 };
 
-PyDoc_STRVAR(silicondust_HDHR_type_doc,
+PyDoc_STRVAR(hdhomerun_Device_type_doc,
     "An object representing a single HDHomeRun device.");
 
-PyTypeObject silicondust_hdhr_type = {
+PyTypeObject hdhomerun_Device_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              /* ob_size */
-    "silicondust.HDHR",             /* tp_name */
+    "hdhomerun.Device",             /* tp_name */
     sizeof(py_hdhr_object),         /* tp_basicsize */
     0,                              /* tp_itemsize */
     (destructor)py_hdhr_dealloc,    /* tp_dealloc */
@@ -392,7 +392,7 @@ PyTypeObject silicondust_hdhr_type = {
     0,                              /* tp_setattro */
     0,                              /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
-    silicondust_HDHR_type_doc,      /* tp_doc */
+    hdhomerun_Device_type_doc,      /* tp_doc */
     0,                              /* tp_traverse */
     0,                              /* tp_clear */
     0,                              /* tp_richcompare */
@@ -423,33 +423,33 @@ PyObject *py_hdhr_clone(py_hdhr_object *self) {
     if(arg_list == NULL) {
         return NULL;
     }
-    copied_obj = PyObject_CallObject((PyObject *)&silicondust_hdhr_type, arg_list);
+    copied_obj = PyObject_CallObject((PyObject *)&hdhomerun_Device_type, arg_list);
     Py_DECREF(arg_list);
     return copied_obj;
 }
 
 /* module methods (none for now) */
-PyMethodDef silicondust_methods[] = {
+PyMethodDef hdhomerun_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-PyMODINIT_FUNC initsilicondust(void) {
+PyMODINIT_FUNC inithdhomerun(void) {
     PyObject *m;
 
-    m = Py_InitModule3("silicondust", silicondust_methods, silicondust_module_doc);
+    m = Py_InitModule3("hdhomerun", hdhomerun_methods, hdhomerun_module_doc);
     if(!m)
         return;
 
-    /* Finalize the HDHR type object */
-    if (PyType_Ready(&silicondust_hdhr_type) < 0)
+    /* Finalize the Device type object */
+    if (PyType_Ready(&hdhomerun_Device_type) < 0)
         return;
-    Py_INCREF(&silicondust_hdhr_type);
-    if(PyModule_AddObject(m, "HDHR", (PyObject *)&silicondust_hdhr_type) < 0)
+    Py_INCREF(&hdhomerun_Device_type);
+    if(PyModule_AddObject(m, "HDHR", (PyObject *)&hdhomerun_Device_type) < 0)
         return;
 
     /* Initialize the HDHRError exception class */
-    silicondust_hdhr_error = PyErr_NewException("silicondust.HDHRError", PyExc_Exception, NULL);
-    Py_INCREF(silicondust_hdhr_error);
-    if(PyModule_AddObject(m, "HDHRError", silicondust_hdhr_error) < 0)
+    hdhomerun_device_error = PyErr_NewException("hdhomerun.HDHRError", PyExc_Exception, NULL);
+    Py_INCREF(hdhomerun_device_error);
+    if(PyModule_AddObject(m, "HDHRError", hdhomerun_device_error) < 0)
         return;
 }
