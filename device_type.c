@@ -346,6 +346,7 @@ PyMethodDef py_hdhr_methods[] = {
     {"get_supported",           (PyCFunction)py_hdhr_get_supported,           METH_KEYWORDS,              HDHR_DOC_get_supported},
     /* Set operations, defined in device_set.c */
     {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_DOC_set_device},
+    {"set_multicast",           (PyCFunction)py_hdhr_set_multicast,           METH_KEYWORDS,              HDHR_DOC_set_multicast},
     {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_DOC_set_tuner},
     {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_DOC_set_tuner_from_str},
     {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_DOC_set_var},

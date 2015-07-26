@@ -50,6 +50,31 @@ PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObject *kwd
     }
 }
 
+const char HDHR_DOC_set_multicast[] = "Set the device's multicast parameters.";
+PyObject *py_hdhr_set_multicast(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+    unsigned int multicast_ip;
+    unsigned int multicast_port;
+    char *kwlist[] = {"multicast_ip", "multicast_port", NULL};
+    int success;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "II", kwlist, &multicast_ip, &multicast_port))
+        return NULL;
+
+    success = hdhomerun_device_set_multicast(self->hd, (uint32_t)multicast_ip, (uint16_t)multicast_port);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(silicondust_hdhr_error, "failed to set multicast parameters");
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(silicondust_hdhr_error, HDHR_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+}
+
 const char HDHR_DOC_set_tuner[] = "Set the tuner which this object references.";
 PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
     unsigned int tuner = 0;

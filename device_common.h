@@ -123,6 +123,9 @@ PyObject *py_hdhr_get_supported(py_hdhr_object *, PyObject *, PyObject *);
 extern const char HDHR_DOC_set_device[];
 PyObject *py_hdhr_set_device(py_hdhr_object *, PyObject *, PyObject *);
 
+extern const char HDHR_DOC_set_multicast[];
+PyObject *py_hdhr_set_multicast(py_hdhr_object *, PyObject *, PyObject *);
+
 extern const char HDHR_DOC_set_tuner[];
 PyObject *py_hdhr_set_tuner(py_hdhr_object *, PyObject *, PyObject *);
 
