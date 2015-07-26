@@ -25,8 +25,8 @@
  *  Functions which operate directly on the hdhomerun_device_t pointer
  */
 
-const char HDHR_DOC_set_device[] = "Set the device to which this object points.";
-PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+const char Device_DOC_set_device[] = "Set the device to which this object points.";
+PyObject *py_device_set_device(py_device_object *self, PyObject *args, PyObject *kwds) {
     unsigned int device_id = 0;
     unsigned int device_ip = 0;
     char *kwlist[] = {"device_id", "device_ip", NULL};
@@ -37,7 +37,7 @@ PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObject *kwd
 
     success = hdhomerun_device_set_device(self->hd, (uint32_t)device_id, (uint32_t)device_ip);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "failed to set device parameters");
@@ -45,13 +45,13 @@ PyObject *py_hdhr_set_device(py_hdhr_object *self, PyObject *args, PyObject *kwd
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
 
-const char HDHR_DOC_set_multicast[] = "Set the device's multicast parameters.";
-PyObject *py_hdhr_set_multicast(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+const char Device_DOC_set_multicast[] = "Set the device's multicast parameters.";
+PyObject *py_device_set_multicast(py_device_object *self, PyObject *args, PyObject *kwds) {
     unsigned int multicast_ip;
     unsigned int multicast_port;
     char *kwlist[] = {"multicast_ip", "multicast_port", NULL};
@@ -62,7 +62,7 @@ PyObject *py_hdhr_set_multicast(py_hdhr_object *self, PyObject *args, PyObject *
 
     success = hdhomerun_device_set_multicast(self->hd, (uint32_t)multicast_ip, (uint16_t)multicast_port);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "failed to set multicast parameters");
@@ -70,13 +70,13 @@ PyObject *py_hdhr_set_multicast(py_hdhr_object *self, PyObject *args, PyObject *
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
 
-const char HDHR_DOC_set_tuner[] = "Set the tuner which this object references.";
-PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+const char Device_DOC_set_tuner[] = "Set the tuner which this object references.";
+PyObject *py_device_set_tuner(py_device_object *self, PyObject *args, PyObject *kwds) {
     unsigned int tuner = 0;
     char *kwlist[] = {"tuner", NULL};
     int success;
@@ -86,7 +86,7 @@ PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObject *kwds
 
     success = hdhomerun_device_set_tuner(self->hd, tuner);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "failed to set tuner number");
@@ -94,13 +94,13 @@ PyObject *py_hdhr_set_tuner(py_hdhr_object *self, PyObject *args, PyObject *kwds
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
 
-const char HDHR_DOC_set_tuner_from_str[] = "Set the tuner which this object references.";
-PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+const char Device_DOC_set_tuner_from_str[] = "Set the tuner which this object references.";
+PyObject *py_device_set_tuner_from_str(py_device_object *self, PyObject *args, PyObject *kwds) {
     const char *tuner = NULL;
     char *kwlist[] = {"tuner", NULL};
     int success;
@@ -110,7 +110,7 @@ PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args, PyObj
 
     success = hdhomerun_device_set_tuner_from_str(self->hd, tuner);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "failed to set tuner from string");
@@ -118,7 +118,7 @@ PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args, PyObj
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
 }
@@ -127,8 +127,8 @@ PyObject *py_hdhr_set_tuner_from_str(py_hdhr_object *self, PyObject *args, PyObj
  *  Functions which operate on a HDHomeRun device
  */
 
-const char HDHR_DOC_set_var[] = "Set a named control variable on the device.";
-PyObject *py_hdhr_set_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+const char Device_DOC_set_var[] = "Set a named control variable on the device.";
+PyObject *py_device_set_var(py_device_object *self, PyObject *args, PyObject *kwds) {
     char *ret_error = "the set operation was rejected by the device";
     char *item = NULL;
     char *value = NULL;
@@ -140,7 +140,7 @@ PyObject *py_hdhr_set_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) 
 
     success = hdhomerun_device_set_var(self->hd, item, value, NULL, &ret_error);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, ret_error);
@@ -148,7 +148,7 @@ PyObject *py_hdhr_set_var(py_hdhr_object *self, PyObject *args, PyObject *kwds) 
     } else if(success == 1) {
         Py_RETURN_NONE;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
 }

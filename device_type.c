@@ -26,7 +26,7 @@ PyDoc_STRVAR(hdhomerun_module_doc,
 
 PyObject *hdhomerun_device_error = NULL;
 
-int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+int py_device_init(py_device_object *self, PyObject *args, PyObject *kwds) {
     unsigned int device_id = 0;
     unsigned int device_ip = 0;
     unsigned int tuner_count = 0;
@@ -36,7 +36,7 @@ int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
         return -1;
     self->hd = hdhomerun_device_create(device_id, device_ip, 0, NULL);
     if(!self->hd) {
-        PyErr_SetString(hdhomerun_device_error, "Failed to create HDHR device");
+        PyErr_SetString(hdhomerun_device_error, "Failed to initialize Device object");
         return -1;
     }
     self->tuner_count = tuner_count;
@@ -44,7 +44,7 @@ int py_hdhr_init(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
     return 0;
 }
 
-void py_hdhr_dealloc(py_hdhr_object *self) {
+void py_device_dealloc(py_device_object *self) {
     if(self->locked != 0) {
         /* Try to unlock the tuner, ignore errors */
         hdhomerun_device_tuner_lockkey_release(self->hd);
@@ -64,10 +64,10 @@ uint32_t parse_ip_addr(const char *str) {
     return (uint32_t)((a[0] << 24) | (a[1] << 16) | (a[2] << 8) | (a[3] << 0));
 }
 
-PyDoc_STRVAR(HDHR_discover_doc,
-    "Locates all HDHomeRun(s) on your network and returns a list of HDHR objects.");
+PyDoc_STRVAR(Device_DOC_discover,
+    "Locates all HDHomeRun(s) on your network and returns a list of Device objects.");
 
-PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
+PyObject *py_device_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
     PyObject *result = NULL;
     PyObject *tuner = NULL;
     char *target_ip_str = NULL;
@@ -110,10 +110,10 @@ PyObject *py_hdhr_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
     return result;
 }
 
-PyDoc_STRVAR(HDHR_upgrade_doc,
+PyDoc_STRVAR(Device_DOC_upgrade,
     "Uploads and installs a firmware image on a HDHomeRun device.");
 
-PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+PyObject *py_device_upgrade(py_device_object *self, PyObject *args, PyObject *kwds) {
     FILE *fp = NULL;
     char *filename = NULL;
     int count = 0;
@@ -164,17 +164,17 @@ PyObject *py_hdhr_upgrade(py_hdhr_object *self, PyObject *args, PyObject *kwds) 
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_tuner_lockkey_request_doc,
+PyDoc_STRVAR(Device_DOC_tuner_lockkey_request,
     "Locks a tuner.");
 
-PyObject *py_hdhr_tuner_lockkey_request(py_hdhr_object *self) {
+PyObject *py_device_tuner_lockkey_request(py_device_object *self) {
     char *ret_error = "the device rejected the lock request";
     int success;
 
     success = hdhomerun_device_tuner_lockkey_request(self->hd, &ret_error);
 
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, ret_error);
@@ -182,22 +182,22 @@ PyObject *py_hdhr_tuner_lockkey_request(py_hdhr_object *self) {
     } else if(success == 1) {
         self->locked = 1;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_tuner_lockkey_force_doc,
+PyDoc_STRVAR(Device_DOC_tuner_lockkey_force,
     "Locks a tuner.");
 
-PyObject *py_hdhr_tuner_lockkey_force(py_hdhr_object *self) {
+PyObject *py_device_tuner_lockkey_force(py_device_object *self) {
     int success;
 
     success = hdhomerun_device_tuner_lockkey_force(self->hd);
 
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "the device rejected the forced lock request");
@@ -205,21 +205,21 @@ PyObject *py_hdhr_tuner_lockkey_force(py_hdhr_object *self) {
     } else if(success == 1) {
         self->locked = 1;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_tuner_lockkey_release_doc,
+PyDoc_STRVAR(Device_DOC_tuner_lockkey_release,
     "Unlocks a tuner.");
 
-PyObject *py_hdhr_tuner_lockkey_release(py_hdhr_object *self) {
+PyObject *py_device_tuner_lockkey_release(py_device_object *self) {
     int success;
 
     success = hdhomerun_device_tuner_lockkey_release(self->hd);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "the device rejected the unlock request");
@@ -227,36 +227,36 @@ PyObject *py_hdhr_tuner_lockkey_release(py_hdhr_object *self) {
     } else if(success == 1) {
         self->locked = 0;
     } else {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_stream_start_doc,
+PyDoc_STRVAR(Device_DOC_stream_start,
     "Tell the device to start streaming data.");
 
-PyObject *py_hdhr_stream_start(py_hdhr_object *self) {
+PyObject *py_device_stream_start(py_device_object *self) {
     int success;
 
     success = hdhomerun_device_stream_start(self->hd);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "the device refused to start streaming");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_stream_recv_doc,
+PyDoc_STRVAR(Device_DOC_stream_recv,
     "Receive stream data.");
 
-PyObject *py_hdhr_stream_recv(py_hdhr_object *self, PyObject *args, PyObject *kwds) {
+PyObject *py_device_stream_recv(py_device_object *self, PyObject *args, PyObject *kwds) {
     uint8_t *ptr;
     size_t actual_size;
     unsigned int max_size = VIDEO_DATA_BUFFER_SIZE_1S;
@@ -273,97 +273,97 @@ PyObject *py_hdhr_stream_recv(py_hdhr_object *self, PyObject *args, PyObject *kw
     return PyByteArray_FromStringAndSize((const char *)ptr, (Py_ssize_t)actual_size);
 }
 
-PyDoc_STRVAR(HDHR_stream_flush_doc,
+PyDoc_STRVAR(Device_DOC_stream_flush,
     "Undocumented.");
 
-PyObject *py_hdhr_stream_flush(py_hdhr_object *self) {
+PyObject *py_device_stream_flush(py_device_object *self) {
     hdhomerun_device_stream_flush(self->hd);
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_stream_stop_doc,
+PyDoc_STRVAR(Device_DOC_stream_stop,
     "Tell the device to stop streaming data.");
 
-PyObject *py_hdhr_stream_stop(py_hdhr_object *self) {
+PyObject *py_device_stream_stop(py_device_object *self) {
     hdhomerun_device_stream_stop(self->hd);
     Py_RETURN_NONE;
 }
 
-PyDoc_STRVAR(HDHR_wait_for_lock_doc,
+PyDoc_STRVAR(Device_DOC_wait_for_lock,
     "Wait for tuner lock after channel change.");
 
-PyObject *py_hdhr_wait_for_lock(py_hdhr_object *self) {
+PyObject *py_device_wait_for_lock(py_device_object *self) {
     int success;
     struct hdhomerun_tuner_status_t status;
 
     success = hdhomerun_device_wait_for_lock(self->hd, &status);
     if(success == -1) {
-        PyErr_SetString(PyExc_IOError, HDHR_ERR_COMMUNICATION);
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
         return NULL;
     } else if(success == 0) {
         PyErr_SetString(hdhomerun_device_error, "the device did not report lock status");
         return NULL;
     } else if(success != 1) {
-        PyErr_SetString(hdhomerun_device_error, HDHR_ERR_UNDOCUMENTED);
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
     }
 
     return build_tuner_status_dict(&status);
 }
 
-PyDoc_STRVAR(HDHR_DOC_clone,
-    "Clone the HDHR object");
+PyDoc_STRVAR(Device_DOC_clone,
+    "Clone the Device object");
 
-PyObject *py_hdhr_clone(py_hdhr_object *self);
+PyObject *py_device_clone(py_device_object *self);
 
-PyMethodDef py_hdhr_methods[] = {
-    /* Python methods for the HDHR class, not language bindings for libhdhomerun */
-    {"discover",                (PyCFunction)py_hdhr_discover,                METH_KEYWORDS | METH_CLASS, HDHR_discover_doc},
-    {"clone",                   (PyCFunction)py_hdhr_clone,                   METH_NOARGS,                HDHR_DOC_clone},
+PyMethodDef py_device_methods[] = {
+    /* Python methods for the Device class, not language bindings for libhdhomerun */
+    {"discover",                (PyCFunction)py_device_discover,                METH_KEYWORDS | METH_CLASS, Device_DOC_discover},
+    {"clone",                   (PyCFunction)py_device_clone,                   METH_NOARGS,                Device_DOC_clone},
     /* Get operations, defined in device_get.c */
-    {"get_name",                (PyCFunction)py_hdhr_get_name,                METH_NOARGS,                HDHR_DOC_get_name},
-    {"get_device_id",           (PyCFunction)py_hdhr_get_device_id,           METH_NOARGS,                HDHR_DOC_get_device_id},
-    {"get_device_ip",           (PyCFunction)py_hdhr_get_device_ip,           METH_NOARGS,                HDHR_DOC_get_device_ip},
-    {"get_device_id_requested", (PyCFunction)py_hdhr_get_device_id_requested, METH_NOARGS,                HDHR_DOC_get_device_id_requested},
-    {"get_device_ip_requested", (PyCFunction)py_hdhr_get_device_ip_requested, METH_NOARGS,                HDHR_DOC_get_device_ip_requested},
-    {"get_tuner",               (PyCFunction)py_hdhr_get_tuner,               METH_NOARGS,                HDHR_DOC_get_tuner},
-    {"get_var",                 (PyCFunction)py_hdhr_get_var,                 METH_KEYWORDS,              HDHR_DOC_get_var},
-    {"get_tuner_status",        (PyCFunction)py_hdhr_get_tuner_status,        METH_NOARGS,                HDHR_DOC_get_tuner_status},
-    {"get_tuner_vstatus",       (PyCFunction)py_hdhr_get_tuner_vstatus,       METH_NOARGS,                HDHR_DOC_get_tuner_vstatus},
-    {"get_tuner_streaminfo",    (PyCFunction)py_hdhr_get_tuner_streaminfo,    METH_NOARGS,                HDHR_DOC_get_tuner_streaminfo},
-    {"get_tuner_channel",       (PyCFunction)py_hdhr_get_tuner_channel,       METH_NOARGS,                HDHR_DOC_get_tuner_channel},
-    {"get_tuner_vchannel",      (PyCFunction)py_hdhr_get_tuner_vchannel,      METH_NOARGS,                HDHR_DOC_get_tuner_vchannel},
-    {"get_tuner_channelmap",    (PyCFunction)py_hdhr_get_tuner_channelmap,    METH_NOARGS,                HDHR_DOC_get_tuner_channelmap},
-    {"get_tuner_filter",        (PyCFunction)py_hdhr_get_tuner_filter,        METH_NOARGS,                HDHR_DOC_get_tuner_filter},
-    {"get_tuner_program",       (PyCFunction)py_hdhr_get_tuner_program,       METH_NOARGS,                HDHR_DOC_get_tuner_program},
-    {"get_tuner_target",        (PyCFunction)py_hdhr_get_tuner_target,        METH_NOARGS,                HDHR_DOC_get_tuner_target},
-    {"get_tuner_plotsample",    (PyCFunction)py_hdhr_get_tuner_plotsample,    METH_NOARGS,                HDHR_DOC_get_tuner_plotsample},
-    {"get_tuner_lockkey_owner", (PyCFunction)py_hdhr_get_tuner_lockkey_owner, METH_NOARGS,                HDHR_DOC_get_tuner_lockkey_owner},
-    {"get_oob_status",          (PyCFunction)py_hdhr_get_oob_status,          METH_NOARGS,                HDHR_DOC_get_oob_status},
-    {"get_oob_plotsample",      (PyCFunction)py_hdhr_get_oob_plotsample,      METH_NOARGS,                HDHR_DOC_get_oob_plotsample},
-    {"get_ir_target",           (PyCFunction)py_hdhr_get_ir_target,           METH_NOARGS,                HDHR_DOC_get_ir_target},
-    {"get_version",             (PyCFunction)py_hdhr_get_version,             METH_NOARGS,                HDHR_DOC_get_version},
-    {"get_supported",           (PyCFunction)py_hdhr_get_supported,           METH_KEYWORDS,              HDHR_DOC_get_supported},
+    {"get_name",                (PyCFunction)py_device_get_name,                METH_NOARGS,                Device_DOC_get_name},
+    {"get_device_id",           (PyCFunction)py_device_get_device_id,           METH_NOARGS,                Device_DOC_get_device_id},
+    {"get_device_ip",           (PyCFunction)py_device_get_device_ip,           METH_NOARGS,                Device_DOC_get_device_ip},
+    {"get_device_id_requested", (PyCFunction)py_device_get_device_id_requested, METH_NOARGS,                Device_DOC_get_device_id_requested},
+    {"get_device_ip_requested", (PyCFunction)py_device_get_device_ip_requested, METH_NOARGS,                Device_DOC_get_device_ip_requested},
+    {"get_tuner",               (PyCFunction)py_device_get_tuner,               METH_NOARGS,                Device_DOC_get_tuner},
+    {"get_var",                 (PyCFunction)py_device_get_var,                 METH_KEYWORDS,              Device_DOC_get_var},
+    {"get_tuner_status",        (PyCFunction)py_device_get_tuner_status,        METH_NOARGS,                Device_DOC_get_tuner_status},
+    {"get_tuner_vstatus",       (PyCFunction)py_device_get_tuner_vstatus,       METH_NOARGS,                Device_DOC_get_tuner_vstatus},
+    {"get_tuner_streaminfo",    (PyCFunction)py_device_get_tuner_streaminfo,    METH_NOARGS,                Device_DOC_get_tuner_streaminfo},
+    {"get_tuner_channel",       (PyCFunction)py_device_get_tuner_channel,       METH_NOARGS,                Device_DOC_get_tuner_channel},
+    {"get_tuner_vchannel",      (PyCFunction)py_device_get_tuner_vchannel,      METH_NOARGS,                Device_DOC_get_tuner_vchannel},
+    {"get_tuner_channelmap",    (PyCFunction)py_device_get_tuner_channelmap,    METH_NOARGS,                Device_DOC_get_tuner_channelmap},
+    {"get_tuner_filter",        (PyCFunction)py_device_get_tuner_filter,        METH_NOARGS,                Device_DOC_get_tuner_filter},
+    {"get_tuner_program",       (PyCFunction)py_device_get_tuner_program,       METH_NOARGS,                Device_DOC_get_tuner_program},
+    {"get_tuner_target",        (PyCFunction)py_device_get_tuner_target,        METH_NOARGS,                Device_DOC_get_tuner_target},
+    {"get_tuner_plotsample",    (PyCFunction)py_device_get_tuner_plotsample,    METH_NOARGS,                Device_DOC_get_tuner_plotsample},
+    {"get_tuner_lockkey_owner", (PyCFunction)py_device_get_tuner_lockkey_owner, METH_NOARGS,                Device_DOC_get_tuner_lockkey_owner},
+    {"get_oob_status",          (PyCFunction)py_device_get_oob_status,          METH_NOARGS,                Device_DOC_get_oob_status},
+    {"get_oob_plotsample",      (PyCFunction)py_device_get_oob_plotsample,      METH_NOARGS,                Device_DOC_get_oob_plotsample},
+    {"get_ir_target",           (PyCFunction)py_device_get_ir_target,           METH_NOARGS,                Device_DOC_get_ir_target},
+    {"get_version",             (PyCFunction)py_device_get_version,             METH_NOARGS,                Device_DOC_get_version},
+    {"get_supported",           (PyCFunction)py_device_get_supported,           METH_KEYWORDS,              Device_DOC_get_supported},
     /* Set operations, defined in device_set.c */
-    {"set_device",              (PyCFunction)py_hdhr_set_device,              METH_KEYWORDS,              HDHR_DOC_set_device},
-    {"set_multicast",           (PyCFunction)py_hdhr_set_multicast,           METH_KEYWORDS,              HDHR_DOC_set_multicast},
-    {"set_tuner",               (PyCFunction)py_hdhr_set_tuner,               METH_KEYWORDS,              HDHR_DOC_set_tuner},
-    {"set_tuner_from_str",      (PyCFunction)py_hdhr_set_tuner_from_str,      METH_KEYWORDS,              HDHR_DOC_set_tuner_from_str},
-    {"set_var",                 (PyCFunction)py_hdhr_set_var,                 METH_KEYWORDS,              HDHR_DOC_set_var},
+    {"set_device",              (PyCFunction)py_device_set_device,              METH_KEYWORDS,              Device_DOC_set_device},
+    {"set_multicast",           (PyCFunction)py_device_set_multicast,           METH_KEYWORDS,              Device_DOC_set_multicast},
+    {"set_tuner",               (PyCFunction)py_device_set_tuner,               METH_KEYWORDS,              Device_DOC_set_tuner},
+    {"set_tuner_from_str",      (PyCFunction)py_device_set_tuner_from_str,      METH_KEYWORDS,              Device_DOC_set_tuner_from_str},
+    {"set_var",                 (PyCFunction)py_device_set_var,                 METH_KEYWORDS,              Device_DOC_set_var},
     /* Misc. operations */
-    {"upgrade",                 (PyCFunction)py_hdhr_upgrade,                 METH_KEYWORDS,              HDHR_upgrade_doc},
-    {"tuner_lockkey_request",   (PyCFunction)py_hdhr_tuner_lockkey_request,   METH_NOARGS,                HDHR_tuner_lockkey_request_doc},
-    {"tuner_lockkey_force",     (PyCFunction)py_hdhr_tuner_lockkey_force,     METH_NOARGS,                HDHR_tuner_lockkey_force_doc},
-    {"tuner_lockkey_release",   (PyCFunction)py_hdhr_tuner_lockkey_release,   METH_NOARGS,                HDHR_tuner_lockkey_release_doc},
-    {"stream_start",            (PyCFunction)py_hdhr_stream_start,            METH_NOARGS,                HDHR_stream_start_doc},
-    {"stream_recv",             (PyCFunction)py_hdhr_stream_recv,             METH_KEYWORDS,              HDHR_stream_recv_doc},
-    {"stream_flush",            (PyCFunction)py_hdhr_stream_flush,            METH_NOARGS,                HDHR_stream_flush_doc},
-    {"stream_stop",             (PyCFunction)py_hdhr_stream_stop,             METH_NOARGS,                HDHR_stream_stop_doc},
-    {"wait_for_lock",           (PyCFunction)py_hdhr_wait_for_lock,           METH_NOARGS,                HDHR_wait_for_lock_doc},
-    {NULL,                      NULL,                                         0,                          NULL}  /* Sentinel */
+    {"upgrade",                 (PyCFunction)py_device_upgrade,                 METH_KEYWORDS,              Device_DOC_upgrade},
+    {"tuner_lockkey_request",   (PyCFunction)py_device_tuner_lockkey_request,   METH_NOARGS,                Device_DOC_tuner_lockkey_request},
+    {"tuner_lockkey_force",     (PyCFunction)py_device_tuner_lockkey_force,     METH_NOARGS,                Device_DOC_tuner_lockkey_force},
+    {"tuner_lockkey_release",   (PyCFunction)py_device_tuner_lockkey_release,   METH_NOARGS,                Device_DOC_tuner_lockkey_release},
+    {"stream_start",            (PyCFunction)py_device_stream_start,            METH_NOARGS,                Device_DOC_stream_start},
+    {"stream_recv",             (PyCFunction)py_device_stream_recv,             METH_KEYWORDS,              Device_DOC_stream_recv},
+    {"stream_flush",            (PyCFunction)py_device_stream_flush,            METH_NOARGS,                Device_DOC_stream_flush},
+    {"stream_stop",             (PyCFunction)py_device_stream_stop,             METH_NOARGS,                Device_DOC_stream_stop},
+    {"wait_for_lock",           (PyCFunction)py_device_wait_for_lock,           METH_NOARGS,                Device_DOC_wait_for_lock},
+    {NULL,                      NULL,                                           0,                          NULL}  /* Sentinel */
 };
 
-PyMemberDef py_hdhr_members[] = {
+PyMemberDef py_device_members[] = {
     {NULL}  /* Sentinel */
 };
 
@@ -374,9 +374,9 @@ PyTypeObject hdhomerun_Device_type = {
     PyObject_HEAD_INIT(NULL)
     0,                              /* ob_size */
     "hdhomerun.Device",             /* tp_name */
-    sizeof(py_hdhr_object),         /* tp_basicsize */
+    sizeof(py_device_object),       /* tp_basicsize */
     0,                              /* tp_itemsize */
-    (destructor)py_hdhr_dealloc,    /* tp_dealloc */
+    (destructor)py_device_dealloc,  /* tp_dealloc */
     0,                              /* tp_print */
     0,                              /* tp_getattr */
     0,                              /* tp_setattr */
@@ -399,21 +399,21 @@ PyTypeObject hdhomerun_Device_type = {
     0,                              /* tp_weaklistoffset */
     0,                              /* tp_iter */
     0,                              /* tp_iternext */
-    py_hdhr_methods,                /* tp_methods */
-    py_hdhr_members,                /* tp_members */
+    py_device_methods,              /* tp_methods */
+    py_device_members,              /* tp_members */
     0,                              /* tp_getset */
     0,                              /* tp_base */
     0,                              /* tp_dict */
     0,                              /* tp_descr_get */
     0,                              /* tp_descr_set */
     0,                              /* tp_dictoffset */
-    (initproc)py_hdhr_init,         /* tp_init */
+    (initproc)py_device_init,       /* tp_init */
     (allocfunc)PyType_GenericAlloc, /* tp_alloc */
     (newfunc)PyType_GenericNew,     /* tp_new */
     (freefunc)PyObject_Del,         /* tp_free */
 };
 
-PyObject *py_hdhr_clone(py_hdhr_object *self) {
+PyObject *py_device_clone(py_device_object *self) {
     PyObject *arg_list, *copied_obj;
     uint32_t device_id, device_ip;
 
@@ -444,12 +444,12 @@ PyMODINIT_FUNC inithdhomerun(void) {
     if (PyType_Ready(&hdhomerun_Device_type) < 0)
         return;
     Py_INCREF(&hdhomerun_Device_type);
-    if(PyModule_AddObject(m, "HDHR", (PyObject *)&hdhomerun_Device_type) < 0)
+    if(PyModule_AddObject(m, "Device", (PyObject *)&hdhomerun_Device_type) < 0)
         return;
 
-    /* Initialize the HDHRError exception class */
-    hdhomerun_device_error = PyErr_NewException("hdhomerun.HDHRError", PyExc_Exception, NULL);
+    /* Initialize the DeviceError exception class */
+    hdhomerun_device_error = PyErr_NewException("hdhomerun.DeviceError", PyExc_Exception, NULL);
     Py_INCREF(hdhomerun_device_error);
-    if(PyModule_AddObject(m, "HDHRError", hdhomerun_device_error) < 0)
+    if(PyModule_AddObject(m, "DeviceError", hdhomerun_device_error) < 0)
         return;
 }

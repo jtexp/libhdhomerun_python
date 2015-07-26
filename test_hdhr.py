@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
 from pprint import pprint
-from hdhomerun import HDHR, HDHRError
+from hdhomerun import Device, DeviceError
 
-devices = HDHR.discover()
+devices = Device.discover()
 if len(devices) > 0:
     try:
         devices[0].set_tuner(2)
@@ -32,6 +32,6 @@ if len(devices) > 0:
         #print 'Supported: %s' % devices[0].get_supported(prefix='tuner')
         #print devices[0].get_tuner_plotsample()
         devices[0].tuner_lockkey_release()
-    except HDHRError as sd_error:
+    except DeviceError as sd_error:
         print 'Failure: ' + str(sd_error)
 

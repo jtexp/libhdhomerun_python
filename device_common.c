@@ -22,9 +22,9 @@
 #include "device_common.h"
 
 /* String constants for use when raising exceptions */
-const char * const HDHR_ERR_REJECTED_OP = "the operation was rejected";
-const char * const HDHR_ERR_COMMUNICATION = "communication error sending request to hdhomerun device";
-const char * const HDHR_ERR_UNDOCUMENTED = "undocumented error reported by library";
+const char * const DEVICE_ERR_REJECTED_OP = "the operation was rejected";
+const char * const DEVICE_ERR_COMMUNICATION = "communication error sending request to hdhomerun device";
+const char * const DEVICE_ERR_UNDOCUMENTED = "undocumented error reported by library";
 
 /* Internal */
 PyObject *build_tuner_status_dict(struct hdhomerun_tuner_status_t *status) {
