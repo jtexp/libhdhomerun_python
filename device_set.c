@@ -152,3 +152,99 @@ PyObject *py_device_set_var(py_device_object *self, PyObject *args, PyObject *kw
         return NULL;
     }
 }
+
+const char Device_DOC_set_tuner_channel[] = "Set the channel which the tuner operators on.";
+PyObject *py_device_set_tuner_channel(py_device_object *self, PyObject *args, PyObject *kwds) {
+    int success;
+    char *channel;
+    char *kwlist[] = {"channel", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &channel))
+        return NULL;
+
+    success = hdhomerun_device_set_tuner_channel(self->hd, (const char *)channel);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+}
+
+const char Device_DOC_set_tuner_vchannel[] = "Set the virtual channel which the tuner operators on.";
+PyObject *py_device_set_tuner_vchannel(py_device_object *self, PyObject *args, PyObject *kwds) {
+    int success;
+    char *vchannel;
+    char *kwlist[] = {"vchannel", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &vchannel))
+        return NULL;
+
+    success = hdhomerun_device_set_tuner_channel(self->hd, (const char *)vchannel);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+}
+
+const char Device_DOC_set_tuner_channelmap[] = "Set the tuner's channel map.";
+PyObject *py_device_set_tuner_channelmap(py_device_object *self, PyObject *args, PyObject *kwds) {
+    int success;
+    char *channelmap;
+    char *kwlist[] = {"channelmap", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &channelmap))
+        return NULL;
+
+    success = hdhomerun_device_set_tuner_channelmap(self->hd, (const char *)channelmap);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+}
+
+const char Device_DOC_set_tuner_filter[] = "Set the tuner's filter.";
+PyObject *py_device_set_tuner_filter(py_device_object *self, PyObject *args, PyObject *kwds) {
+    int success;
+    char *filter;
+    char *kwlist[] = {"filter", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &filter))
+        return NULL;
+
+    success = hdhomerun_device_set_tuner_filter(self->hd, (const char *)filter);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
+        return NULL;
+    } else if(success == 0) {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_REJECTED_OP);
+        return NULL;
+    } else if(success == 1) {
+        Py_RETURN_NONE;
+    } else {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
+        return NULL;
+    }
+}

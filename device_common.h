@@ -134,4 +134,16 @@ PyObject *py_device_set_tuner_from_str(py_device_object *, PyObject *, PyObject 
 extern const char Device_DOC_set_var[];
 PyObject *py_device_set_var(py_device_object *, PyObject *, PyObject *);
 
+extern const char Device_DOC_set_tuner_channel[];
+PyObject *py_device_set_tuner_channel(py_device_object *, PyObject *, PyObject *);
+
+extern const char Device_DOC_set_tuner_vchannel[];
+PyObject *py_device_set_tuner_vchannel(py_device_object *, PyObject *, PyObject *);
+
+extern const char Device_DOC_set_tuner_channelmap[];
+PyObject *py_device_set_tuner_channelmap(py_device_object *, PyObject *, PyObject *);
+
+extern const char Device_DOC_set_tuner_filter[];
+PyObject *py_device_set_tuner_filter(py_device_object *, PyObject *, PyObject *);
+
 #endif /* _DEVICE_COMMON_H */

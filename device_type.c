@@ -366,6 +366,10 @@ PyMethodDef py_device_methods[] = {
     {"set_tuner",               (PyCFunction)py_device_set_tuner,               METH_KEYWORDS,              Device_DOC_set_tuner},
     {"set_tuner_from_str",      (PyCFunction)py_device_set_tuner_from_str,      METH_KEYWORDS,              Device_DOC_set_tuner_from_str},
     {"set_var",                 (PyCFunction)py_device_set_var,                 METH_KEYWORDS,              Device_DOC_set_var},
+    {"set_tuner_channel",       (PyCFunction)py_device_set_tuner_channel,       METH_KEYWORDS,              Device_DOC_set_tuner_channel},
+    {"set_tuner_vchannel",      (PyCFunction)py_device_set_tuner_vchannel,      METH_KEYWORDS,              Device_DOC_set_tuner_vchannel},
+    {"set_tuner_channelmap",    (PyCFunction)py_device_set_tuner_channelmap,    METH_KEYWORDS,              Device_DOC_set_tuner_channelmap},
+    {"set_tuner_filter",        (PyCFunction)py_device_set_tuner_filter,        METH_KEYWORDS,              Device_DOC_set_tuner_filter},
     /* Misc. operations */
     {"upgrade",                 (PyCFunction)py_device_upgrade,                 METH_KEYWORDS,              Device_DOC_upgrade},
     {"tuner_lockkey_request",   (PyCFunction)py_device_tuner_lockkey_request,   METH_NOARGS,                Device_DOC_tuner_lockkey_request},
