@@ -33,8 +33,13 @@ int py_device_init(py_device_object *self, PyObject *args, PyObject *kwds) {
     char *kwlist[] = {"device_ip", "device_id", "tuner", NULL};
     int success;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I|II", kwlist, &device_ip, &device_id, &tuner))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|III", kwlist, &device_ip, &device_id, &tuner))
         return -1;
+
+    if(device_ip == 0 && device_id == HDHOMERUN_DEVICE_ID_WILDCARD) {
+        PyErr_SetString(hdhomerun_device_error, "Insufficient information provided to initialize instance");
+        return -1;
+    }
 
     self->hd = hdhomerun_device_create(device_id, device_ip, 0, NULL);
     if(!self->hd) {
