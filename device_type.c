@@ -432,10 +432,12 @@ PyTypeObject hdhomerun_Device_type = {
 PyObject *py_device_clone(py_device_object *self) {
     PyObject *arg_list, *copied_obj;
     uint32_t device_id, device_ip;
+    unsigned int tuner;
 
     device_id = hdhomerun_device_get_device_id(self->hd);
     device_ip = hdhomerun_device_get_device_ip(self->hd);
-    arg_list = Py_BuildValue("(II)", device_ip, device_id);
+    tuner = hdhomerun_device_get_tuner(self->hd);
+    arg_list = Py_BuildValue("(III)", device_ip, device_id, tuner);
     if(arg_list == NULL) {
         return NULL;
     }
