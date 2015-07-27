@@ -29,13 +29,27 @@ PyObject *hdhomerun_device_error = NULL;
 int py_device_init(py_device_object *self, PyObject *args, PyObject *kwds) {
     unsigned int device_id = HDHOMERUN_DEVICE_ID_WILDCARD;
     unsigned int device_ip = 0;
-    char *kwlist[] = {"device_ip", "device_id", NULL};
+    unsigned int tuner = 0;
+    char *kwlist[] = {"device_ip", "device_id", "tuner", NULL};
+    int success;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I|I", kwlist, &device_ip, &device_id))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I|II", kwlist, &device_ip, &device_id, &tuner))
         return -1;
+
     self->hd = hdhomerun_device_create(device_id, device_ip, 0, NULL);
     if(!self->hd) {
         PyErr_SetString(hdhomerun_device_error, "Failed to initialize Device object");
+        return -1;
+    }
+    success = hdhomerun_device_set_tuner(self->hd, tuner);
+    if(success == -1) {
+        PyErr_SetString(PyExc_IOError, DEVICE_ERR_COMMUNICATION);
+        return -1;
+    } else if(success == 0) {
+        PyErr_SetString(hdhomerun_device_error, "failed to set tuner number");
+        return -1;
+    } else if(success != 1) {
+        PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return -1;
     }
     self->locked = 0;
