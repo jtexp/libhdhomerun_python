@@ -30,7 +30,7 @@ PyObject *py_device_get_name(py_device_object *self) {
     const char *name;
 
     name = hdhomerun_device_get_name(self->hd);
-    return PyString_FromString(name);
+    return PyUnicode_FromString(name);
 }
 
 const char Device_DOC_get_device_id[] = "Get the device ID.";
@@ -96,7 +96,7 @@ PyObject *py_device_get_var(py_device_object *self, PyObject *args, PyObject *kw
         PyErr_SetString(hdhomerun_device_error, ret_error);
         return NULL;
     } else if(success == 1) {
-        return PyString_FromString(ret_value);
+        return PyUnicode_FromString(ret_value);
     } else {
         PyErr_SetString(hdhomerun_device_error, DEVICE_ERR_UNDOCUMENTED);
         return NULL;
@@ -158,27 +158,27 @@ PyObject *py_device_get_tuner_vstatus(py_device_object *self) {
     rv = PyDict_New();
     if(!rv) return NULL;
 
-    dv = PyString_FromString(vstatus.vchannel);
+    dv = PyUnicode_FromString(vstatus.vchannel);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "vchannel", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);
 
-    dv = PyString_FromString(vstatus.name);
+    dv = PyUnicode_FromString(vstatus.name);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "name", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);
 
-    dv = PyString_FromString(vstatus.auth);
+    dv = PyUnicode_FromString(vstatus.auth);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "auth", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);
 
-    dv = PyString_FromString(vstatus.cci);
+    dv = PyUnicode_FromString(vstatus.cci);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "cci", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);
 
-    dv = PyString_FromString(vstatus.cgms);
+    dv = PyUnicode_FromString(vstatus.cgms);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "cgms", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);
@@ -218,7 +218,7 @@ PyObject *py_device_get_tuner_streaminfo(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(pstreaminfo);
+    return PyUnicode_FromString(pstreaminfo);
 }
 
 const char Device_DOC_get_tuner_channel[] = "Get the tuner's channel";
@@ -238,7 +238,7 @@ PyObject *py_device_get_tuner_channel(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(pchannel);
+    return PyUnicode_FromString(pchannel);
 }
 
 const char Device_DOC_get_tuner_vchannel[] = "Get the tuner's vchannel";
@@ -258,7 +258,7 @@ PyObject *py_device_get_tuner_vchannel(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(pvchannel);
+    return PyUnicode_FromString(pvchannel);
 }
 
 const char Device_DOC_get_tuner_channelmap[] = "Get the tuner's channel map";
@@ -278,7 +278,7 @@ PyObject *py_device_get_tuner_channelmap(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(pchannelmap);
+    return PyUnicode_FromString(pchannelmap);
 }
 
 const char Device_DOC_get_tuner_filter[] = "Get the tuner's filter";
@@ -298,7 +298,7 @@ PyObject *py_device_get_tuner_filter(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(pfilter);
+    return PyUnicode_FromString(pfilter);
 }
 
 const char Device_DOC_get_tuner_program[] = "Get the tuner's program";
@@ -318,7 +318,7 @@ PyObject *py_device_get_tuner_program(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(pprogram);
+    return PyUnicode_FromString(pprogram);
 }
 
 const char Device_DOC_get_tuner_target[] = "Get the tuner's target";
@@ -338,7 +338,7 @@ PyObject *py_device_get_tuner_target(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(ptarget);
+    return PyUnicode_FromString(ptarget);
 }
 
 
@@ -397,7 +397,7 @@ PyObject *py_device_get_tuner_lockkey_owner(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(powner);
+    return PyUnicode_FromString(powner);
 }
 
 const char Device_DOC_get_oob_status[] = "Get the device's OOB status";
@@ -476,7 +476,7 @@ PyObject *py_device_get_ir_target(py_device_object *self) {
         return NULL;
     }
 
-    return PyString_FromString(ptarget);
+    return PyUnicode_FromString(ptarget);
 }
 
 const char Device_DOC_get_version[] = "Get the device's firmware version";
@@ -522,5 +522,5 @@ PyObject *py_device_get_supported(py_device_object *self, PyObject *args, PyObje
         return NULL;
     }
 
-    return PyString_FromString(pstr);
+    return PyUnicode_FromString(pstr);
 }

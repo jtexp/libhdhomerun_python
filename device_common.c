@@ -34,12 +34,12 @@ PyObject *build_tuner_status_dict(struct hdhomerun_tuner_status_t *status) {
     if(!rv) return NULL;
 
     /* https://mail.python.org/pipermail/capi-sig/2010-July/000414.html */
-    dv = PyString_FromString(status->channel);
+    dv = PyUnicode_FromString(status->channel);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "channel", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);
 
-    dv = PyString_FromString(status->lock_str);
+    dv = PyUnicode_FromString(status->lock_str);
     if(!dv) { Py_DECREF(rv); return NULL; }
     if(PyDict_SetItemString(rv, "lock_str", dv) != 0) { Py_DECREF(rv); return NULL; }
     Py_DECREF(dv);

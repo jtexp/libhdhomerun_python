@@ -69,7 +69,7 @@ void py_device_dealloc(py_device_object *self) {
     }
     hdhomerun_device_destroy(self->hd);
     self->hd = NULL;
-    self->ob_type->tp_free((PyObject*)self);
+    self->ob_base.ob_type->tp_free((PyObject*)self);
 }
 
 uint32_t parse_ip_addr(const char *str) {
@@ -103,7 +103,7 @@ PyObject *py_device_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
         }
     }
 
-    count = hdhomerun_discover_find_devices_custom(target_ip, HDHOMERUN_DEVICE_TYPE_TUNER, HDHOMERUN_DEVICE_ID_WILDCARD, result_list, 64);
+    count = hdhomerun_discover_find_devices_custom_v2(target_ip, HDHOMERUN_DEVICE_TYPE_TUNER, HDHOMERUN_DEVICE_ID_WILDCARD, result_list, 64);
 
     if(count < 0) {
         PyErr_SetString(hdhomerun_device_error, "error sending discover request");
@@ -125,6 +125,7 @@ PyObject *py_device_discover(PyObject *cls, PyObject *args, PyObject *kwds) {
 
     return result;
 }
+   
 
 PyDoc_STRVAR(Device_DOC_upgrade,
     "Uploads and installs a firmware image on a HDHomeRun device.");
@@ -334,7 +335,7 @@ PyObject *py_device_clone(py_device_object *self);
 
 PyMethodDef py_device_methods[] = {
     /* Python methods for the Device class, not language bindings for libhdhomerun */
-    {"discover",                (PyCFunction)py_device_discover,                METH_KEYWORDS | METH_CLASS, Device_DOC_discover},
+    {"discover",                (PyCFunction)py_device_discover,                METH_KEYWORDS | METH_CLASS | METH_VARARGS,                Device_DOC_discover},
     {"clone",                   (PyCFunction)py_device_clone,                   METH_NOARGS,                Device_DOC_clone},
     /* Get operations, defined in device_get.c */
     {"get_name",                (PyCFunction)py_device_get_name,                METH_NOARGS,                Device_DOC_get_name},
@@ -343,7 +344,7 @@ PyMethodDef py_device_methods[] = {
     {"get_device_id_requested", (PyCFunction)py_device_get_device_id_requested, METH_NOARGS,                Device_DOC_get_device_id_requested},
     {"get_device_ip_requested", (PyCFunction)py_device_get_device_ip_requested, METH_NOARGS,                Device_DOC_get_device_ip_requested},
     {"get_tuner",               (PyCFunction)py_device_get_tuner,               METH_NOARGS,                Device_DOC_get_tuner},
-    {"get_var",                 (PyCFunction)py_device_get_var,                 METH_KEYWORDS,              Device_DOC_get_var},
+    {"get_var",                 (PyCFunction)py_device_get_var,                 METH_KEYWORDS | METH_VARARGS,              Device_DOC_get_var},
     {"get_tuner_status",        (PyCFunction)py_device_get_tuner_status,        METH_NOARGS,                Device_DOC_get_tuner_status},
     {"get_tuner_vstatus",       (PyCFunction)py_device_get_tuner_vstatus,       METH_NOARGS,                Device_DOC_get_tuner_vstatus},
     {"get_tuner_streaminfo",    (PyCFunction)py_device_get_tuner_streaminfo,    METH_NOARGS,                Device_DOC_get_tuner_streaminfo},
@@ -359,24 +360,24 @@ PyMethodDef py_device_methods[] = {
     {"get_oob_plotsample",      (PyCFunction)py_device_get_oob_plotsample,      METH_NOARGS,                Device_DOC_get_oob_plotsample},
     {"get_ir_target",           (PyCFunction)py_device_get_ir_target,           METH_NOARGS,                Device_DOC_get_ir_target},
     {"get_version",             (PyCFunction)py_device_get_version,             METH_NOARGS,                Device_DOC_get_version},
-    {"get_supported",           (PyCFunction)py_device_get_supported,           METH_KEYWORDS,              Device_DOC_get_supported},
+    {"get_supported",           (PyCFunction)py_device_get_supported,           METH_KEYWORDS | METH_VARARGS,              Device_DOC_get_supported},
     /* Set operations, defined in device_set.c */
-    {"set_device",              (PyCFunction)py_device_set_device,              METH_KEYWORDS,              Device_DOC_set_device},
-    {"set_multicast",           (PyCFunction)py_device_set_multicast,           METH_KEYWORDS,              Device_DOC_set_multicast},
-    {"set_tuner",               (PyCFunction)py_device_set_tuner,               METH_KEYWORDS,              Device_DOC_set_tuner},
-    {"set_tuner_from_str",      (PyCFunction)py_device_set_tuner_from_str,      METH_KEYWORDS,              Device_DOC_set_tuner_from_str},
-    {"set_var",                 (PyCFunction)py_device_set_var,                 METH_KEYWORDS,              Device_DOC_set_var},
-    {"set_tuner_channel",       (PyCFunction)py_device_set_tuner_channel,       METH_KEYWORDS,              Device_DOC_set_tuner_channel},
-    {"set_tuner_vchannel",      (PyCFunction)py_device_set_tuner_vchannel,      METH_KEYWORDS,              Device_DOC_set_tuner_vchannel},
-    {"set_tuner_channelmap",    (PyCFunction)py_device_set_tuner_channelmap,    METH_KEYWORDS,              Device_DOC_set_tuner_channelmap},
-    {"set_tuner_filter",        (PyCFunction)py_device_set_tuner_filter,        METH_KEYWORDS,              Device_DOC_set_tuner_filter},
+    {"set_device",              (PyCFunction)py_device_set_device,              METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_device},
+    {"set_multicast",           (PyCFunction)py_device_set_multicast,           METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_multicast},
+    {"set_tuner",               (PyCFunction)py_device_set_tuner,               METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_tuner},
+    {"set_tuner_from_str",      (PyCFunction)py_device_set_tuner_from_str,      METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_tuner_from_str},
+    {"set_var",                 (PyCFunction)py_device_set_var,                 METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_var},
+    {"set_tuner_channel",       (PyCFunction)py_device_set_tuner_channel,       METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_tuner_channel},
+    {"set_tuner_vchannel",      (PyCFunction)py_device_set_tuner_vchannel,      METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_tuner_vchannel},
+    {"set_tuner_channelmap",    (PyCFunction)py_device_set_tuner_channelmap,    METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_tuner_channelmap},
+    {"set_tuner_filter",        (PyCFunction)py_device_set_tuner_filter,        METH_KEYWORDS | METH_VARARGS,              Device_DOC_set_tuner_filter},
     /* Misc. operations */
-    {"upgrade",                 (PyCFunction)py_device_upgrade,                 METH_KEYWORDS,              Device_DOC_upgrade},
+    {"upgrade",                 (PyCFunction)py_device_upgrade,                 METH_KEYWORDS | METH_VARARGS,              Device_DOC_upgrade},
     {"tuner_lockkey_request",   (PyCFunction)py_device_tuner_lockkey_request,   METH_NOARGS,                Device_DOC_tuner_lockkey_request},
     {"tuner_lockkey_force",     (PyCFunction)py_device_tuner_lockkey_force,     METH_NOARGS,                Device_DOC_tuner_lockkey_force},
     {"tuner_lockkey_release",   (PyCFunction)py_device_tuner_lockkey_release,   METH_NOARGS,                Device_DOC_tuner_lockkey_release},
     {"stream_start",            (PyCFunction)py_device_stream_start,            METH_NOARGS,                Device_DOC_stream_start},
-    {"stream_recv",             (PyCFunction)py_device_stream_recv,             METH_KEYWORDS,              Device_DOC_stream_recv},
+    {"stream_recv",             (PyCFunction)py_device_stream_recv,             METH_KEYWORDS | METH_VARARGS,              Device_DOC_stream_recv},
     {"stream_flush",            (PyCFunction)py_device_stream_flush,            METH_NOARGS,                Device_DOC_stream_flush},
     {"stream_stop",             (PyCFunction)py_device_stream_stop,             METH_NOARGS,                Device_DOC_stream_stop},
     {"wait_for_lock",           (PyCFunction)py_device_wait_for_lock,           METH_NOARGS,                Device_DOC_wait_for_lock},
@@ -391,47 +392,14 @@ PyDoc_STRVAR(hdhomerun_Device_type_doc,
     "An object representing a single HDHomeRun device.");
 
 PyTypeObject hdhomerun_Device_type = {
-    PyObject_HEAD_INIT(NULL)
-    0,                              /* ob_size */
-    "hdhomerun.Device",             /* tp_name */
-    sizeof(py_device_object),       /* tp_basicsize */
-    0,                              /* tp_itemsize */
-    (destructor)py_device_dealloc,  /* tp_dealloc */
-    0,                              /* tp_print */
-    0,                              /* tp_getattr */
-    0,                              /* tp_setattr */
-    0,                              /* tp_compare */
-    0,                              /* tp_repr */
-    0,                              /* tp_as_number */
-    0,                              /* tp_as_sequence */
-    0,                              /* tp_as_mapping */
-    0,                              /* tp_hash */
-    0,                              /* tp_call */
-    0,                              /* tp_str */
-    0,                              /* tp_getattro */
-    0,                              /* tp_setattro */
-    0,                              /* tp_as_buffer */
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
-    hdhomerun_Device_type_doc,      /* tp_doc */
-    0,                              /* tp_traverse */
-    0,                              /* tp_clear */
-    0,                              /* tp_richcompare */
-    0,                              /* tp_weaklistoffset */
-    0,                              /* tp_iter */
-    0,                              /* tp_iternext */
-    py_device_methods,              /* tp_methods */
-    py_device_members,              /* tp_members */
-    0,                              /* tp_getset */
-    0,                              /* tp_base */
-    0,                              /* tp_dict */
-    0,                              /* tp_descr_get */
-    0,                              /* tp_descr_set */
-    0,                              /* tp_dictoffset */
-    (initproc)py_device_init,       /* tp_init */
-    (allocfunc)PyType_GenericAlloc, /* tp_alloc */
-    (newfunc)PyType_GenericNew,     /* tp_new */
-    (freefunc)PyObject_Del,         /* tp_free */
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "hdhomerun.Device", sizeof(py_device_object), 0,
+    (destructor)py_device_dealloc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, hdhomerun_Device_type_doc, 0, 0,
+    0,  0, 0,  0,  py_device_methods,  py_device_members,    0, 0,  0,  0,  0,
+    0,  (initproc)py_device_init,  (allocfunc)PyType_GenericAlloc, (newfunc)PyType_GenericNew,  (freefunc)PyObject_Del,
 };
+
 
 PyObject *py_device_clone(py_device_object *self) {
     PyObject *arg_list, *copied_obj;
@@ -455,23 +423,37 @@ PyMethodDef hdhomerun_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-PyMODINIT_FUNC inithdhomerun(void) {
+PyMODINIT_FUNC PyInit_hdhomerun(void) {
     PyObject *m;
 
-    m = Py_InitModule3("hdhomerun", hdhomerun_methods, hdhomerun_module_doc);
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "hdhomerun",
+        hdhomerun_module_doc,
+        -1,
+        hdhomerun_methods,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+    };
+
+    m = PyModule_Create(&moduledef);
+
     if(!m)
-        return;
+        return NULL;
 
     /* Finalize the Device type object */
     if (PyType_Ready(&hdhomerun_Device_type) < 0)
-        return;
+        return NULL;
     Py_INCREF(&hdhomerun_Device_type);
     if(PyModule_AddObject(m, "Device", (PyObject *)&hdhomerun_Device_type) < 0)
-        return;
+        return NULL;
 
     /* Initialize the DeviceError exception class */
     hdhomerun_device_error = PyErr_NewException("hdhomerun.DeviceError", PyExc_Exception, NULL);
     Py_INCREF(hdhomerun_device_error);
     if(PyModule_AddObject(m, "DeviceError", hdhomerun_device_error) < 0)
-        return;
+        return NULL;
+    return m;
 }
